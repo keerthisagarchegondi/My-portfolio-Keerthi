@@ -1,0 +1,202 @@
+/* Experience.module.css */
+
+.section { background: var(--bg-base); }
+
+/* ── Header ── */
+.header { margin-bottom: 3rem; }
+
+/* ── Timeline wrapper ── */
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Scroll-driven vertical line ── */
+.lineTrack {
+  position: absolute;
+  left: 18px;
+  top: 20px;
+  bottom: 20px;
+  width: 2px;
+  background: var(--color-border);
+  border-radius: 1px;
+  overflow: hidden;
+  z-index: 0;
+}
+.lineFill {
+  position: absolute;
+  inset: 0;
+  background: var(--grad-primary);
+  transform-origin: top center;
+}
+
+/* ── Row: timeline col + card ── */
+.row {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 0 1.25rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Timeline column ── */
+.timelineCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1.35rem;
+}
+
+/* Dot */
+.dot {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid;
+  background: var(--bg-surface);
+  flex-shrink: 0;
+  transition: background 0.3s, transform 0.25s;
+  z-index: 2;
+}
+.dotActive { transform: scale(1.2); }
+
+/* Pulse ring */
+.dotRing {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  animation: none;
+}
+.dotRingActive {
+  animation: dotPulse 1.6s ease-out 0.2s 3;
+}
+@keyframes dotPulse {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+/* ── Card ── */
+.card {
+  position: relative;
+  padding: 1.4rem 1.5rem 1.4rem 1.8rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+/* ── Left accent bar ── */
+.accentBar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3.5px;
+  border-radius: 3px 0 0 3px;
+}
+
+/* ── Card head ── */
+.cardHead { display: flex; flex-direction: column; gap: 0.4rem; }
+
+/* Title row */
+.titleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.title {
+  font-family: var(--font-heading);
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  line-height: 1.25;
+}
+
+/* "Current" badge */
+.currentBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid;
+  line-height: 1.5;
+}
+
+/* Meta row */
+.metaRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+}
+.company {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+.metaSep { color: var(--color-text-muted); font-size: 0.7rem; }
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  border-radius: 1px;
+}
+
+/* ── Bullet list ── */
+.bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+.bulletDot {
+  margin-top: 0.5rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .row { grid-template-columns: 28px 1fr; gap: 0 0.75rem; }
+  .lineTrack { left: 12px; }
+  .card { padding: 1.1rem 1.1rem 1.1rem 1.4rem; }
+  .title { font-size: 0.97rem; }
+}

@@ -1,0 +1,324 @@
+/* Hero.module.css — two-column hero, left-aligned content, right data viz */
+
+/* ── Hero shell ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--grad-hero);
+  padding-top: 5rem;
+}
+
+/* 3D canvas */
+.canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.55;
+}
+
+/* Decorative blobs */
+.blob1 {
+  position: absolute;
+  top: -15%; right: -8%;
+  width: 50vw; height: 50vw;
+  max-width: 560px; max-height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(4,208,109,0.12) 0%, transparent 65%);
+  pointer-events: none;
+}
+.blob2 {
+  position: absolute;
+  bottom: -8%; left: -5%;
+  width: 42vw; height: 42vw;
+  max-width: 500px; max-height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(186,242,105,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ── Two-column content grid ── */
+.content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+  align-items: center;
+  gap: 4rem;
+  padding-bottom: 7rem;
+}
+
+/* ── LEFT column ── */
+.left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.9rem;
+  background: rgba(4,208,109,0.08);
+  border: 1px solid rgba(4,208,109,0.2);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 1.4rem;
+}
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--color-emerald);
+  animation: pulseDot 2s infinite;
+  flex-shrink: 0;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}
+
+/* Name */
+.name {
+  font-size: clamp(2.85rem, 7.5vw, 4.75rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  margin-bottom: 0.8rem;
+  background: var(--grad-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Role typewriter */
+.roleWrap { margin-bottom: 1.25rem; }
+.role {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+/* Tagline */
+.tagline {
+  font-size: 0.98rem;
+  color: var(--color-text-secondary);
+  max-width: 490px;
+  line-height: 1.78;
+  margin-bottom: 2rem;
+}
+
+/* CTA row */
+.ctas {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+/* Social buttons */
+.socials { display: flex; gap: 0.6rem; }
+.socialBtn {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-base);
+  text-decoration: none;
+}
+.socialBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── RIGHT column ── */
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Data viz wrapper (positions floating chips) ── */
+.vizWrap {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Floating metric chips */
+.floatChip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  padding: 0.28rem 0.72rem 0.28rem 0.55rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #2a2b2d !important;
+  box-shadow: var(--shadow-md);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  z-index: 10;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.floatVal {
+  font-weight: 800;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+}
+.floatLabel {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* ── Glassmorphic analytics card ── */
+.vizCard {
+  position: relative;
+  background: rgba(28, 29, 31, 0.90);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(4,208,109,0.15);
+  border-radius: var(--radius-xl);
+  padding: 1.4rem 1.4rem 1.2rem;
+  box-shadow: 0 8px 40px rgba(4,208,109,0.12), 0 2px 12px rgba(0,0,0,0.5);
+  overflow: visible;
+}
+
+/* Card header */
+.vizHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.vizTitle {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.01em;
+}
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: var(--radius-full);
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.2);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-emerald);
+}
+.liveDot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--color-emerald);
+  animation: pulseDot 1.8s infinite;
+}
+
+/* Bar chart */
+.chartWrap {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.chartSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* Metric labels row */
+.metricRow {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border-light);
+  gap: 0.5rem;
+}
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+.metricVal {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.metricLabel {
+  font-size: 0.62rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* ── Stat chips strip ── */
+.chips {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.1rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(36,37,39,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1.2rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xs);
+}
+.chipN {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+.chipL {
+  font-size: 0.73rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding-bottom: 7rem;
+  }
+  .right { justify-content: flex-start; }
+  .vizWrap { max-width: 380px; }
+}
+
+@media (max-width: 640px) {
+  .content { padding-bottom: 8.5rem; }
+  .right { display: none; }
+  .chips { gap: 0.45rem; }
+  .chip  { padding: 0.38rem 0.85rem; }
+}

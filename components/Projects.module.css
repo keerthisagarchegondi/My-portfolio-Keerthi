@@ -1,0 +1,210 @@
+/* Projects.module.css — mirrors Skills card design language */
+
+/* ── Section ── */
+.section {
+  position: relative;
+  background: var(--bg-muted);
+  overflow: hidden;
+}
+
+/* Ambient shimmer backdrop */
+.shimmer {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 20%, rgba(4,208,109,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 40% at 85% 75%, rgba(186,242,105,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 35% at 50% 50%, rgba(74,221,151,0.03) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Header ── */
+.header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 3rem;
+}
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.4rem;
+  overflow: visible;
+  margin-bottom: 0;
+}
+.headWord     { display: inline-block; line-height: 1.15; }
+.subWrap      { position: relative; width: fit-content; margin-top: 0.6rem; }
+.sub          { margin-bottom: 0.5rem; }
+.subLine {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--grad-primary);
+  width: 100%;
+}
+
+/* ── Grid ── */
+.grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── Card ── */
+.card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  cursor: default;
+  will-change: transform;
+  transition: border-color 0.25s;
+}
+
+/* Featured spans full row */
+.featured { grid-column: 1 / -1; }
+
+/* Draw-in top border */
+.topBorder {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  z-index: 1;
+}
+
+/* Glow ring on hover */
+.glowRing {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid transparent;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── Card inner padding ── */
+.cardInner {
+  padding: 1.5rem 1.4rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* ── Card header row ── */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* Emoji icon box */
+.iconBox {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.emoji { font-size: 1.4rem; line-height: 1; }
+
+/* Badge group */
+.badges {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Tag chip */
+.tagChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+/* Featured badge */
+.featBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: rgba(4,208,109,0.12);
+  color: #04d06d;
+  border: 1px solid rgba(4,208,109,0.25);
+  letter-spacing: 0.02em;
+}
+
+/* Title */
+.title {
+  font-family: var(--font-heading);
+  font-size: 1.04rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+  color: var(--color-text-primary);
+}
+
+/* Description */
+.desc {
+  font-size: 0.84rem;
+  color: var(--color-text-secondary);
+  line-height: 1.68;
+}
+
+/* ── Impact pills ── */
+.impacts { display: flex; flex-wrap: wrap; gap: 0.38rem; }
+.impactPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-size: 0.71rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--color-border);
+}
+.impactDot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Stack tags ── */
+.stack { display: flex; flex-wrap: wrap; gap: 0.38rem; }
+.stackTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.68rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  background: var(--bg-muted);
+  cursor: default;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .grid { grid-template-columns: 1fr; }
+  .featured { grid-column: 1; }
+}

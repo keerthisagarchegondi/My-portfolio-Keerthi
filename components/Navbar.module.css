@@ -1,0 +1,166 @@
+/* Navbar.module.css — Dynamic Island floating nav */
+
+/* The island pill  */
+.island {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.45rem 0.5rem 0.45rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(28,29,31,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(4,208,109,0.15);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
+  transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+
+.scrolled {
+  background: rgba(28,29,31,0.96);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(4,208,109,0.1);
+  padding: 0.4rem 0.5rem 0.4rem 0.85rem;
+}
+
+/* Logo */
+.logo {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: var(--grad-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  background-color: transparent;
+  margin-right: 0.5rem;
+}
+
+/* Desktop links row */
+.links {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.link {
+  position: relative;
+  background: none;
+  border: none;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  padding: 0.4rem 0.75rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.link:hover { color: var(--color-text); }
+.link.active { color: var(--color-primary); font-weight: 600; }
+
+/* Animated active pill behind text */
+.activePill {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: rgba(4,208,109,0.1);
+  z-index: -1;
+}
+
+/* CTA */
+.cta {
+  display: flex;
+  align-items: center;
+  padding: 0.4rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  background: var(--color-primary);
+  color: #fff;
+  margin-left: 0.25rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.cta:hover {
+  background: #02b85f;
+  box-shadow: 0 2px 12px rgba(4,208,109,0.45);
+}
+
+/* Hamburger – mobile only */
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 22px;
+  height: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+.burger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--color-text);
+  border-radius: 1px;
+  transition: all 0.25s ease;
+  transform-origin: center;
+}
+.burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mobileInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.mobileLink {
+  background: none;
+  border: none;
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text);
+  padding: 0.6rem 2rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.mobileLink:hover { color: var(--color-primary); }
+
+@media (max-width: 768px) {
+  .links, .cta { display: none; }
+  .burger { display: flex; }
+  .island {
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    width: auto;
+    justify-content: space-between;
+  }
+}
