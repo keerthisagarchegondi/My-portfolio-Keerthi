@@ -12,44 +12,47 @@ import styles from './Experience.module.css';
 /* ─── Role Data ─── */
 const ROLES = [
   {
-    title:    'Enterprise Analytics Manager',
-    company:  'Fortune 500 Retail & Consumer',
-    period:   '2022 — Present',
+    title:    'Analytics Manager',
+    company:  "Leslie's Pool Mart Inc.",
+    period:   'Jun 2022 — Present',
     location: 'Phoenix, AZ',
     color:    '#04d06d',
     current:  true,
     points: [
-      'Led 4-member analytics team delivering 40+ executive dashboards in Power BI & Tableau, reducing decision latency by 35%.',
-      'Built an end-to-end Predictive Customer Retention platform (Python + Scikit-learn + Snowflake) cutting annual churn by 18%.',
-      'Deployed NLP-powered sentiment analysis on 2M+ reviews, surfacing 12 product experience gaps adopted by C-suite roadmap.',
-      'Designed CLV segmentation model (K-Means + GBM) that increased targeted campaign ROI by 28% YoY.',
-      'Standardised ML governance framework across 3 business units — reduced model deployment time from 6 weeks to 9 days.',
+      'Productionized a customer churn classification model using Scikit-learn and XGBoost, containerized in Docker with MLflow, reducing churn by 12% over six months.',
+      'Designed a reusable A/B testing framework for marketing experiments, integrating statistical significance checks to sharpen budget allocation.',
+      'Engineered ELT pipelines in PySpark, SQL, and dbt, orchestrating data flows through Airflow with Kafka-based event ingestion.',
+      'Tuned Snowflake query performance by restructuring clustering keys, cutting execution time on high-complexity queries from 15 minutes to under 60 seconds.',
+      'Partnered with cross-functional engineering teams to deploy ML predictions through FastAPI endpoints on Kubernetes.',
+      'Built Power BI dashboards with DAX measures, translating predictive insights into actionable views for stakeholders.',
     ],
   },
   {
     title:    'Business Development Associate',
-    company:  'Ed-Tech & Sales',
-    period:   '2019 — 2020',
-    location: 'India',
+    company:  "Think and Learn Pvt Ltd (Byju's)",
+    period:   'Sep 2019 — May 2020',
+    location: 'Telangana, India',
     color:    '#4add97',
     current:  false,
     points: [
-      'Grew B2B client base by 55% in 8 months through data-driven outreach segmentation and pipeline analytics (Excel + CRM).',
-      'Built live sales performance tracker that cut weekly reporting time from 6 hours to 45 minutes.',
-      'Managed cross-functional initiatives aligning product, marketing, and sales for 3 product launches.',
+      'Built churn prediction models using app usage and campaign data, enabling marketing to prioritize high-ROI engagement strategies.',
+      'Designed SQL-based dashboards consolidating funnel drop-offs, campaign-level ROI, and cohort retention views.',
+      'Conducted regional-level analysis to identify where marketing spend was driving new customer acquisition versus stalling.',
+      'Restructured the reporting cadence to align weekly and monthly views with leadership KPI frameworks.',
     ],
   },
   {
     title:    'Chartering & Operations Manager',
-    company:  'Metals & Logistics',
-    period:   '2016 — 2018',
-    location: 'India',
+    company:  'Vedanta Limited',
+    period:   'Sep 2016 — Oct 2018',
+    location: 'Odisha, India',
     color:    '#baf269',
     current:  false,
     points: [
-      'Coordinated international freight operations for 150,000+ MT bulk cargo — on-time delivery rate: 96.3%.',
-      'Automated voyage cost reconciliation (VBA + SQL) saving 80+ analyst-hours per quarter.',
-      'Negotiated charter contracts saving $420K annually through market analysis and competitive benchmarking.',
+      'Developed freight cost models for chartering decisions, quantifying route selection and cycle time trade-offs used daily for allocation planning.',
+      'Built operational monitoring dashboards in Power BI and Excel tracking vessel turnaround, rake utilization, and demurrage exposure.',
+      'Partnered with finance on budget and ROI analysis to optimize procurement strategy.',
+      'Created scenario planning tools in Excel and Python, testing different port routings and volume profiles to support logistics reviews.',
     ],
   },
 ];
@@ -214,7 +217,7 @@ export default function Experience() {
             animate={hInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.22, duration: 0.5 }}
           >
-            8+ years bridging analytics, operations, and enterprise strategy across three industries.
+            7+ years bridging analytics, operations, and enterprise strategy across three industries.
           </motion.p>
         </div>
 

@@ -1,80 +1,61 @@
 /**
- * Projects.js — Cards matching the Skills "FloatTiltCard" design.
- * Float-up entrance → idle float loop, 3D tilt, draw-in top border,
- * glow ring, staggered impact pills + stack tags.
+ * Projects.js — Interactive project showcase.
+ * Large featured display on the left with project selector tabs on the right.
+ * Animated transitions between projects with tech stack visualization.
  */
-import { useState, useEffect } from 'react';
-import { motion, useMotionValue, useTransform, useSpring, useAnimate } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { FiExternalLink, FiStar, FiZap } from 'react-icons/fi';
+import { FiArrowRight, FiStar, FiZap } from 'react-icons/fi';
 import styles from './Projects.module.css';
 
 /* ─── Project data ─── */
 const PROJECTS = [
   {
-    emoji:    '📊',
-    tag:      'Enterprise',
-    title:    'Predictive Retention & CLV Platform',
-    desc:     'End-to-end retention system generating CLV scores, flagging at-risk segments, and surfacing actionable levers for marketing teams.',
-    impact:   ['CLV impact quantified', 'Automated KPI pipelines', 'Data-driven segmentation'],
-    stack:    ['Snowflake', 'BigQuery', 'Python', 'Power BI', 'Scikit-learn'],
+    emoji:    '💬',
+    tag:      'NLP',
+    title:    'NLP-Based Sentiment Analysis Pipeline',
+    desc:     'Built an end-to-end NLP pipeline using Hugging Face Transformers (BERT) and spaCy to analyze and cluster customer support conversations at scale, extracting sentiment scores and topic patterns from unstructured chat data.',
+    impact:   ['Sentiment scores extracted', 'Topic patterns identified', 'Power BI integration'],
+    stack:    ['Hugging Face', 'BERT', 'spaCy', 'Python', 'Power BI'],
     color:    '#04d06d',
     featured: true,
   },
   {
-    emoji:    '💬',
-    tag:      'NLP',
-    title:    'Sentiment Intelligence Dashboard',
-    desc:     'BERT-powered NLP on 10k+ chat records — surfacing complaint clusters and sentiment trends via interactive Power BI dashboard.',
-    impact:   ['10k+ records analyzed', 'Proactive CX workflows', 'Automated pipeline'],
-    stack:    ['BERT', 'NLTK', 'Python', 'Power BI'],
+    emoji:    '📊',
+    tag:      'Sentiment Analysis',
+    title:    'Customer Service Sentiment Analysis',
+    desc:     'Sentiment analysis pipeline on unstructured chat data using NLTK, BERT, and clustering techniques to identify service quality discrepancies across customer interactions.',
+    impact:   ['Quality discrepancies flagged', 'Data-driven insights', 'Cluster visualization'],
+    stack:    ['NLTK', 'BERT', 'Clustering', 'Power BI'],
     color:    '#4add97',
     featured: false,
   },
   {
-    emoji:    '🧪',
-    tag:      'Marketing Science',
-    title:    'A/B Testing & Uplift Framework',
-    desc:     'Systematic experiment design → uplift modeling → significance testing. Turned ad-hoc reviews into rigorous measurement.',
-    impact:   ['Standardized measurement', 'High-ROI channels identified', 'Faster insights'],
-    stack:    ['Python', 'Statsmodels', 'SQL', 'Power BI'],
+    emoji:    '🚗',
+    tag:      'Computer Vision',
+    title:    'Real-Time Traffic Object Detection',
+    desc:     'Real-time vehicle and pedestrian detection system using ResNet50 pretrained on the COCO dataset, processed through OpenCV for frame extraction and detection visualization.',
+    impact:   ['Real-time detection', 'Frame extraction', 'Live visualization'],
+    stack:    ['TensorFlow', 'Keras', 'OpenCV', 'Python'],
     color:    '#baf269',
     featured: false,
   },
   {
-    emoji:    '🚚',
-    tag:      'Supply Chain',
-    title:    'Freight Optimization System',
-    desc:     'Route optimization + vendor benchmarking + scenario planning tools for a large-scale industrial logistics division.',
-    impact:   ['Cycle time reduced', 'Real-time utilization KPIs', 'Scenario models'],
-    stack:    ['SQL', 'Python', 'Tableau', 'Excel'],
+    emoji:    '🏀',
+    tag:      'Topic Modeling',
+    title:    'NBA Topic Modeling (LDA)',
+    desc:     'Applied LDA topic modeling to NBA game data to uncover thematic patterns in player performance narratives, identifying distinct playing styles and game strategy patterns.',
+    impact:   ['Thematic patterns uncovered', 'Performance clusters', 'Strategy insights'],
+    stack:    ['Python', 'NLP', 'LDA', 'Text Preprocessing'],
     color:    '#02b85f',
     featured: false,
   },
 ];
 
-/* ─── Float durations — different per card for organic feel ─── */
-const FLOAT_DUR = [4.2, 3.7, 5.0, 4.5];
-
-/* ─── Tag animation variants ─── */
-const tagStagger = {
-  hidden:  {},
-  visible: { transition: { staggerChildren: 0.05, delayChildren: 0.3 } },
-};
-const tagVariant = {
-  hidden:  { opacity: 0, scale: 0.75, y: 8 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.26, ease: [0.22, 1, 0.36, 1] } },
-};
-const impactStagger = {
-  hidden:  {},
-  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.22 } },
-};
-const impactVariant = {
-  hidden:  { opacity: 0, x: -12 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] } },
-};
+/* ─── Word heading variants ─── */
 const wordV = {
-  hidden:  { opacity: 0, y: 28, skewY: 5 },
+  hidden: { opacity: 0, y: 28, skewY: 5 },
   visible: (i) => ({
     opacity: 1, y: 0, skewY: 0,
     transition: { delay: i * 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] },
@@ -82,190 +63,155 @@ const wordV = {
 };
 const WORDS = ['Work', 'That', 'Moved', 'the', 'Needle'];
 
-/* ─── FloatTiltCard — matches Skills card behaviour exactly ─── */
-function FloatTiltCard({ children, ci, gInView, color, className }) {
-  const [scope, animCard] = useAnimate();
-  const mx  = useMotionValue(0);
-  const my  = useMotionValue(0);
-  const rx  = useTransform(my, [-40, 40], [7, -7]);
-  const ry  = useTransform(mx, [-40, 40], [-7, 7]);
-  const srx = useSpring(rx, { stiffness: 280, damping: 28 });
-  const sry = useSpring(ry, { stiffness: 280, damping: 28 });
-  const [hov, setHov] = useState(false);
-
-  useEffect(() => {
-    if (!gInView) return;
-    let cancelled = false;
-    const run = async () => {
-      await animCard(scope.current,
-        { opacity: 1, y: 0, scale: 1 },
-        { delay: ci * 0.12, duration: 0.72, ease: [0.22, 1, 0.36, 1] }
-      );
-      if (cancelled) return;
-      animCard(scope.current,
-        { y: [0, -12, 0] },
-        { duration: FLOAT_DUR[ci % FLOAT_DUR.length], repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.2 }
-      );
-    };
-    run();
-    return () => { cancelled = true; };
-  }, [gInView]);
-
-  const onMove  = (e) => {
-    const r = scope.current?.getBoundingClientRect();
-    if (!r) return;
-    mx.set(e.clientX - r.left - r.width  / 2);
-    my.set(e.clientY - r.top  - r.height / 2);
-  };
-  const onLeave = () => { mx.set(0); my.set(0); setHov(false); };
-
+/* ─── Main project display ─── */
+function ProjectDisplay({ project }) {
   return (
-    <motion.article
-      ref={scope}
-      className={className}
-      initial={{ opacity: 0, y: 64, scale: 0.94 }}
-      style={{ rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d', perspective: 900 }}
-      animate={hov
-        ? { boxShadow: `0 28px 64px ${color}30, 0 6px 20px rgba(0,0,0,0.08)`, borderColor: `${color}55` }
-        : { boxShadow: '0 4px 14px rgba(0,0,0,0.04)', borderColor: 'var(--color-border)' }
-      }
-      transition={{ duration: 0.22 }}
-      onMouseMove={onMove}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={onLeave}
+    <motion.div
+      key={project.title}
+      className={styles.display}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Glow ring on hover */}
+      {/* Top accent line */}
       <motion.div
-        className={styles.glowRing}
-        style={{ borderColor: color }}
-        animate={{ opacity: hov ? 1 : 0 }}
-        transition={{ duration: 0.2 }}
+        className={styles.accentLine}
+        style={{ background: `linear-gradient(90deg, ${project.color}, transparent)` }}
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       />
-      {children}
-    </motion.article>
+
+      {/* Emoji + tag row */}
+      <div className={styles.displayTop}>
+        <motion.div
+          className={styles.emojiBox}
+          style={{ background: `${project.color}12` }}
+          initial={{ scale: 0, rotate: -30 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 16 }}
+        >
+          <span className={styles.emoji}>{project.emoji}</span>
+        </motion.div>
+        <div className={styles.badgeRow}>
+          <span className={styles.tagBadge} style={{ color: project.color, borderColor: `${project.color}40`, background: `${project.color}10` }}>
+            <FiZap size={10} />
+            {project.tag}
+          </span>
+          {project.featured && (
+            <span className={styles.featBadge}>
+              <FiStar size={9} />
+              Featured
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Title */}
+      <motion.h3
+        className={styles.displayTitle}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.4 }}
+      >
+        {project.title}
+      </motion.h3>
+
+      {/* Description */}
+      <motion.p
+        className={styles.displayDesc}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.18, duration: 0.4 }}
+      >
+        {project.desc}
+      </motion.p>
+
+      {/* Impact metrics */}
+      <div className={styles.impactSection}>
+        <span className={styles.impactLabel}>Key Impact</span>
+        <div className={styles.impactList}>
+          {project.impact.map((item, i) => (
+            <motion.div
+              key={item}
+              className={styles.impactItem}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.25 + i * 0.07, duration: 0.35 }}
+            >
+              <span className={styles.impactDot} style={{ background: project.color, boxShadow: `0 0 8px ${project.color}` }} />
+              <span>{item}</span>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tech stack */}
+      <div className={styles.stackSection}>
+        <span className={styles.stackLabel}>Tech Stack</span>
+        <div className={styles.stackList}>
+          {project.stack.map((tech, i) => (
+            <motion.span
+              key={tech}
+              className={styles.stackPill}
+              style={{ '--pill-color': project.color }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 + i * 0.05, duration: 0.3 }}
+              whileHover={{
+                scale: 1.06,
+                borderColor: project.color,
+                color: project.color,
+                boxShadow: `0 0 16px ${project.color}25`,
+              }}
+            >
+              {tech}
+            </motion.span>
+          ))}
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
-/* ─── Single project card ─── */
-function ProjectCard({ project, ci, gInView }) {
+/* ─── Project selector tab ─── */
+function ProjectTab({ project, index, isActive, onClick, inView }) {
   return (
-    <FloatTiltCard
-      ci={ci}
-      gInView={gInView}
-      color={project.color}
-      className={`${styles.card} ${project.featured ? styles.featured : ''}`}
+    <motion.button
+      className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
+      style={{ '--tab-color': project.color }}
+      onClick={onClick}
+      initial={{ opacity: 0, x: 20 }}
+      animate={inView ? { opacity: 1, x: 0 } : {}}
+      transition={{ delay: 0.2 + index * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ x: -4 }}
+      whileTap={{ scale: 0.97 }}
     >
-      {/* Draw-in top border */}
-      <motion.div
-        className={styles.topBorder}
-        style={{ background: `linear-gradient(90deg, ${project.color}, ${project.color}55)` }}
-        initial={{ scaleX: 0, originX: 0 }}
-        animate={gInView ? { scaleX: 1 } : {}}
-        transition={{ delay: ci * 0.12 + 0.28, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      />
-
-      <div className={styles.cardInner}>
-        {/* Header row */}
-        <div className={styles.cardHeader}>
-          {/* Emoji icon box */}
-          <motion.div
-            className={styles.iconBox}
-            style={{ background: `${project.color}12` }}
-            initial={{ scale: 0.4, opacity: 0, rotate: -20 }}
-            animate={gInView ? { scale: 1, opacity: 1, rotate: 0 } : {}}
-            transition={{ delay: ci * 0.12 + 0.2, type: 'spring', stiffness: 320, damping: 16 }}
-            whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1, transition: { duration: 0.4 } }}
-          >
-            <span className={styles.emoji}>{project.emoji}</span>
-          </motion.div>
-
-          {/* Badges right side */}
-          <div className={styles.badges}>
-            <motion.span
-              className={styles.tagChip}
-              style={{ background: `${project.color}10`, color: project.color, borderColor: `${project.color}30` }}
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={gInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: ci * 0.12 + 0.38, type: 'spring', stiffness: 300 }}
-            >
-              <FiZap size={10} />
-              {project.tag}
-            </motion.span>
-            {project.featured && (
-              <motion.span
-                className={styles.featBadge}
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={gInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: ci * 0.12 + 0.48, type: 'spring', stiffness: 300 }}
-              >
-                <FiStar size={9} />
-                Featured
-              </motion.span>
-            )}
-          </div>
-        </div>
-
-        {/* Title */}
-        <motion.h3
-          className={styles.title}
-          initial={{ opacity: 0, x: -12 }}
-          animate={gInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ delay: ci * 0.12 + 0.24, duration: 0.42 }}
-        >
+      {/* Active indicator */}
+      {isActive && (
+        <motion.div
+          className={styles.tabIndicator}
+          style={{ background: project.color }}
+          layoutId="projectIndicator"
+          transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+        />
+      )}
+      <span className={styles.tabEmoji}>{project.emoji}</span>
+      <div className={styles.tabContent}>
+        <span className={styles.tabTitle} style={{ color: isActive ? '#fff' : 'var(--color-text-secondary)' }}>
           {project.title}
-        </motion.h3>
-
-        {/* Description */}
-        <motion.p
-          className={styles.desc}
-          initial={{ opacity: 0 }}
-          animate={gInView ? { opacity: 1 } : {}}
-          transition={{ delay: ci * 0.12 + 0.32, duration: 0.4 }}
-        >
-          {project.desc}
-        </motion.p>
-
-        {/* Impact pills — stagger in */}
-        <motion.div
-          className={styles.impacts}
-          variants={impactStagger}
-          initial="hidden"
-          animate={gInView ? 'visible' : 'hidden'}
-        >
-          {project.impact.map(item => (
-            <motion.span key={item} className={styles.impactPill} variants={impactVariant}>
-              <span className={styles.impactDot} style={{ background: project.color }} />
-              {item}
-            </motion.span>
-          ))}
-        </motion.div>
-
-        {/* Stack tags — cascade */}
-        <motion.div
-          className={styles.stack}
-          variants={tagStagger}
-          initial="hidden"
-          animate={gInView ? 'visible' : 'hidden'}
-        >
-          {project.stack.map(t => (
-            <motion.span
-              key={t}
-              className={styles.stackTag}
-              variants={tagVariant}
-              whileHover={{
-                scale: 1.08,
-                background: `${project.color}0F`,
-                borderColor: project.color,
-                color: project.color,
-                transition: { duration: 0.14 },
-              }}
-            >
-              {t}
-            </motion.span>
-          ))}
-        </motion.div>
+        </span>
+        <span className={styles.tabTag} style={{ color: isActive ? project.color : 'var(--color-text-muted)' }}>
+          {project.tag}
+        </span>
       </div>
-    </FloatTiltCard>
+      <FiArrowRight
+        size={14}
+        className={styles.tabArrow}
+        style={{ color: isActive ? project.color : 'var(--color-text-muted)' }}
+      />
+    </motion.button>
   );
 }
 
@@ -273,18 +219,10 @@ function ProjectCard({ project, ci, gInView }) {
 export default function Projects() {
   const [hRef, hInView] = useInView({ triggerOnce: true, threshold: 0.3 });
   const [gRef, gInView] = useInView({ triggerOnce: true, threshold: 0.05 });
+  const [active, setActive] = useState(0);
 
   return (
     <section id="projects" className={`section ${styles.section}`} aria-labelledby="proj-heading">
-      {/* Ambient shimmer */}
-      <motion.div
-        className={styles.shimmer}
-        initial={{ opacity: 0 }}
-        animate={hInView ? { opacity: 1 } : {}}
-        transition={{ duration: 1.4 }}
-        aria-hidden="true"
-      />
-
       <div className="container">
         {/* ── Header ── */}
         <div ref={hRef} className={styles.header}>
@@ -330,11 +268,29 @@ export default function Projects() {
           </div>
         </div>
 
-        {/* ── Cards grid ── */}
-        <div ref={gRef} className={styles.grid}>
-          {PROJECTS.map((p, i) => (
-            <ProjectCard key={p.title} project={p} ci={i} gInView={gInView} />
-          ))}
+        {/* ── Showcase layout ── */}
+        <div ref={gRef} className={styles.showcase}>
+          {/* Left: project display */}
+          <div className={styles.displayWrap}>
+            <AnimatePresence mode="wait">
+              <ProjectDisplay project={PROJECTS[active]} />
+            </AnimatePresence>
+          </div>
+
+          {/* Right: project selector tabs */}
+          <div className={styles.tabs}>
+            <p className={styles.tabsLabel}>Select a project</p>
+            {PROJECTS.map((p, i) => (
+              <ProjectTab
+                key={p.title}
+                project={p}
+                index={i}
+                isActive={active === i}
+                onClick={() => setActive(i)}
+                inView={gInView}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -233,6 +233,7 @@
 
 /* Bar chart */
 .chartWrap {
+  position: relative;
   width: 100%;
   margin-bottom: 1rem;
 }
@@ -241,6 +242,48 @@
   height: auto;
   display: block;
   overflow: visible;
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  transform: translateX(-50%);
+  background: rgba(28, 29, 31, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.12rem;
+  z-index: 20;
+  pointer-events: none;
+  min-width: 48px;
+}
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.15) transparent transparent transparent;
+}
+.ttLabel {
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+.ttVal {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 800;
 }
 
 /* Metric labels row */
@@ -256,6 +299,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.15rem;
+  cursor: default;
 }
 .metricVal {
   font-family: var(--font-heading);
@@ -322,3 +366,4 @@
   .chips { gap: 0.45rem; }
   .chip  { padding: 0.38rem 0.85rem; }
 }
+

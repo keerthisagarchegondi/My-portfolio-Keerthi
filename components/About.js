@@ -9,7 +9,7 @@ import { FiTrendingUp, FiLayers, FiDatabase, FiAward } from 'react-icons/fi';
 import styles from './About.module.css';
 
 const STATS = [
-  { icon: FiTrendingUp, end: 6,   suffix: '+', label: 'Years Exp.',     color: '#04d06d' },
+  { icon: FiTrendingUp, end: 7,   suffix: '+', label: 'Years Exp.',     color: '#04d06d' },
   { icon: FiLayers,     end: 3,   suffix: '',  label: 'Industries',     color: '#4add97' },
   { icon: FiDatabase,   end: 5,   suffix: '+', label: 'Cloud Platforms', color: '#baf269' },
   { icon: FiAward,      end: 100, suffix: '+', label: 'Stakeholders',   color: '#02b85f' },
@@ -37,8 +37,8 @@ export default function About() {
             </motion.h2>
             <motion.p variants={fadeUp} className={styles.body}>
               From mechanical engineering to enterprise analytics — I&apos;ve
-              spent 6+ years building the systems that turn raw data into
-              strategic clarity across retail, ed-tech, and manufacturing.
+              spent 7+ years building the systems that turn raw data into
+              strategic clarity across retail, edtech, and logistics.
             </motion.p>
             <motion.p variants={fadeUp} className={styles.body}>
               I architect Snowflake pipelines, predictive retention models,

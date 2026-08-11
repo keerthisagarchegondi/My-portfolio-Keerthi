@@ -38,8 +38,8 @@ export default function Footer() {
 
         {/* Social */}
         <div className={styles.social}>
-          <a href="https://www.linkedin.com/in/keerthisagarch" target="_blank" rel="noopener noreferrer" className={styles.sLink} aria-label="LinkedIn"><FiLinkedin size={16} /></a>
-          <a href="mailto:keerthisagarchegondi@gmail.com" className={styles.sLink} aria-label="Email"><FiMail size={16} /></a>
+          <a href="https://www.linkedin.com/in/keerthisagarchegondi" target="_blank" rel="noopener noreferrer" className={styles.sLink} aria-label="LinkedIn"><FiLinkedin size={16} /></a>
+          <a href="mailto:ckeerthisagar@gmail.com" className={styles.sLink} aria-label="Email"><FiMail size={16} /></a>
         </div>
       </div>
 

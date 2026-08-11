@@ -1,174 +1,353 @@
 /**
- * Skills.js — Data-analytics themed skill cards.
- * Visual: animated proficiency bars, skill-count badge, featured card,
- * 3D tilt, icon bounce, tag cascade, draw-in top border, glow ring.
+ * Skills.js — Interactive radar chart with orbiting skill tags.
+ * Central animated SVG spider chart + category cards with expandable skill lists.
  */
-import { useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { FiUsers, FiBarChart2, FiMonitor, FiCloud, FiCode, FiZap } from 'react-icons/fi';
+import { FiBarChart2, FiCode, FiCloud, FiMonitor, FiUsers } from 'react-icons/fi';
 import styles from './Skills.module.css';
 
-/* ─── Skill categories with proficiency level + analytics-role context ─── */
+/* ─── Skill data ─── */
 const CATS = [
   {
-    icon:     FiBarChart2,
-    title:    'Data Science',
-    color:    '#04d06d',
-    level:    92,
-    levelLabel: 'Expert',
-    featured: true,
-    context:  'Core practice area',
-    skills:   ['Predictive Modeling', 'A/B Testing', 'CLV Analysis', 'Churn Modeling', 'NLP / BERT', 'Uplift Modeling'],
+    icon: FiBarChart2,
+    title: 'Machine Learning & AI',
+    color: '#04d06d',
+    level: 92,
+    skills: ['Classification', 'Regression', 'Clustering', 'Feature Engineering', 'A/B Testing', 'NLP', 'BERT'],
   },
   {
-    icon:     FiUsers,
-    title:    'Analytics Leadership',
-    color:    '#4add97',
-    level:    88,
-    levelLabel: 'Expert',
-    featured: false,
-    context:  'Stakeholder & strategy',
-    skills:   ['Team Management', 'Stakeholder Alignment', 'Agile Delivery', 'Executive Storytelling'],
+    icon: FiCode,
+    title: 'Programming & ML',
+    color: '#4add97',
+    level: 90,
+    skills: ['Python', 'SQL', 'Pandas', 'NumPy', 'Scikit-learn', 'XGBoost', 'PySpark'],
   },
   {
-    icon:     FiMonitor,
-    title:    'BI & Visualization',
-    color:    '#baf269',
-    level:    85,
-    levelLabel: 'Advanced',
-    featured: false,
-    context:  'From SQL to boardroom',
-    skills:   ['Power BI (DAX)', 'Tableau', 'SQL Dashboards', 'KPI Frameworks'],
+    icon: FiCloud,
+    title: 'Cloud & Data Eng.',
+    color: '#baf269',
+    level: 88,
+    skills: ['GCP', 'Azure', 'Snowflake', 'dbt', 'Airflow', 'Kafka', 'ETL/ELT'],
   },
   {
-    icon:     FiCloud,
-    title:    'Cloud Data',
-    color:    '#02b85f',
-    level:    80,
-    levelLabel: 'Advanced',
-    featured: false,
-    context:  'Scalable pipelines',
-    skills:   ['Snowflake', 'BigQuery', 'Azure', 'Microsoft Fabric', 'Data Governance'],
+    icon: FiMonitor,
+    title: 'MLOps & DevOps',
+    color: '#02b85f',
+    level: 85,
+    skills: ['Docker', 'Kubernetes', 'MLflow', 'FastAPI', 'Git', 'CI/CD'],
   },
   {
-    icon:     FiCode,
-    title:    'Programming',
-    color:    '#4add97',
-    level:    78,
-    levelLabel: 'Advanced',
-    featured: false,
-    context:  'Analysis & modeling',
-    skills:   ['SQL', 'Python', 'Pandas', 'Scikit-learn', 'R', 'Statsmodels'],
+    icon: FiUsers,
+    title: 'Deep Learning & CV',
+    color: '#4add97',
+    level: 80,
+    skills: ['TensorFlow', 'Keras', 'OpenCV', 'Hugging Face', 'spaCy', 'NLTK'],
   },
 ];
 
-/* ─── Variants ─── */
-const gridStagger = {
-  hidden:  {},
-  visible: { transition: { staggerChildren: 0.11, delayChildren: 0.05 } },
-};
+const N = CATS.length;
 
-const cardVariant = {
-  hidden:  { opacity: 0, y: 52, scale: 0.94, rotateX: 10 },
-  visible: {
-    opacity: 1, y: 0, scale: 1, rotateX: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-  },
-};
+/* ─── Radar chart helpers ─── */
+function polarToXY(angleDeg, radius, cx, cy) {
+  const rad = ((angleDeg - 90) * Math.PI) / 180;
+  return { x: cx + radius * Math.cos(rad), y: cy + radius * Math.sin(rad) };
+}
 
-const iconVariant = {
-  hidden:  { scale: 0.4, opacity: 0, rotate: -20 },
-  visible: {
-    scale: 1, opacity: 1, rotate: 0,
-    transition: { type: 'spring', stiffness: 320, damping: 16, delay: 0.18 },
-  },
-};
+function radarPoints(levels, maxR, cx, cy) {
+  const step = 360 / levels.length;
+  return levels
+    .map((lv, i) => {
+      const r = (lv / 100) * maxR;
+      const p = polarToXY(i * step, r, cx, cy);
+      return `${p.x},${p.y}`;
+    })
+    .join(' ');
+}
 
-const tagStagger = {
-  hidden:  {},
-  visible: { transition: { staggerChildren: 0.05, delayChildren: 0.25 } },
-};
+/* ─── SVG radar chart ─── */
+function RadarChart({ active, setActive, inView }) {
+  const size = 340;
+  const cx = size / 2;
+  const cy = size / 2;
+  const maxR = 130;
+  const rings = [0.25, 0.5, 0.75, 1.0];
+  const step = 360 / N;
 
-const tagVariant = {
-  hidden:  { opacity: 0, scale: 0.75, y: 8 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } },
-};
+  const [hoveredNode, setHoveredNode] = useState(null);
 
-/* ─── Animated proficiency bar ─── */
-function ProfBar({ level, color, inView }) {
+  const levels = CATS.map((c) => c.level);
+  const pts = radarPoints(levels, maxR, cx, cy);
+
   return (
-    <div className={styles.barWrap} role="meter" aria-valuenow={level} aria-valuemin={0} aria-valuemax={100}>
-      <div className={styles.barTrack}>
-        <motion.div
-          className={styles.barFill}
-          style={{ background: `linear-gradient(90deg, ${color}99, ${color})` }}
-          initial={{ width: 0 }}
-          animate={inView ? { width: `${level}%` } : { width: 0 }}
-          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
+    <div className={styles.radarWrap}>
+      <svg
+        viewBox={`0 0 ${size} ${size}`}
+        className={styles.radarSvg}
+        onMouseLeave={() => setHoveredNode(null)}
+      >
+        <defs>
+          <linearGradient id="radarFill" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#04d06d" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="#4add97" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#baf269" stopOpacity="0.3" />
+          </linearGradient>
+          <linearGradient id="radarStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#04d06d" />
+            <stop offset="100%" stopColor="#baf269" />
+          </linearGradient>
+          <filter id="radarGlow">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Grid rings */}
+        {rings.map((r) => {
+          const rr = r * maxR;
+          const ringPts = Array.from({ length: N }, (_, i) => {
+            const p = polarToXY(i * step, rr, cx, cy);
+            return `${p.x},${p.y}`;
+          }).join(' ');
+          return (
+            <polygon
+              key={r}
+              points={ringPts}
+              fill="none"
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth="1"
+            />
+          );
+        })}
+
+        {/* Axis lines */}
+        {CATS.map((_, i) => {
+          const end = polarToXY(i * step, maxR, cx, cy);
+          return (
+            <line
+              key={i}
+              x1={cx}
+              y1={cy}
+              x2={end.x}
+              y2={end.y}
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth="1"
+            />
+          );
+        })}
+
+        {/* Data polygon — animated */}
+        <motion.polygon
+          points={radarPoints(Array(N).fill(0), maxR, cx, cy)}
+          animate={inView ? { points: pts } : {}}
+          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+          fill="url(#radarFill)"
+          stroke="url(#radarStroke)"
+          strokeWidth="2"
+          filter="url(#radarGlow)"
+          strokeLinejoin="round"
+          style={{ pointerEvents: 'none' }}
         />
-        {/* Shimmer sweep on the bar */}
-        <motion.div
-          className={styles.barShimmer}
-          initial={{ x: '-100%', opacity: 0 }}
-          animate={inView ? { x: '200%', opacity: [0, 0.6, 0] } : {}}
-          transition={{ duration: 1.0, ease: 'easeOut', delay: 0.9 }}
-        />
-      </div>
-      <span className={styles.barPct} style={{ color }}>{level}%</span>
+
+        {/* Interactive Data points on vertices */}
+        {CATS.map((cat, i) => {
+          const r = (cat.level / 100) * maxR;
+          const p = polarToXY(i * step, r, cx, cy);
+          const isHovered = hoveredNode === i;
+          const isActive = active === i;
+          const isDimmed = hoveredNode !== null && !isHovered;
+
+          return (
+            <g 
+              key={cat.title}
+              onMouseEnter={() => setHoveredNode(i)}
+              onClick={() => setActive(i)}
+              style={{ cursor: 'pointer' }}
+            >
+              {/* Invisible hit area for easier hovering */}
+              <circle cx={p.x} cy={p.y} r={24} fill="transparent" />
+              
+              <motion.circle
+                cx={cx}
+                cy={cy}
+                r={isHovered || isActive ? 7 : 4.5}
+                fill={cat.color}
+                initial={{ cx: cx, cy: cy, opacity: 0 }}
+                animate={inView ? { cx: p.x, cy: p.y, opacity: isDimmed ? 0.3 : 1 } : {}}
+                transition={{ 
+                  opacity: { duration: 0.2 },
+                  r: { duration: 0.2 },
+                  default: { duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.4 + i * 0.08 }
+                }}
+                style={{ filter: (isHovered || isActive) && !isDimmed ? `drop-shadow(0 0 10px ${cat.color})` : 'none' }}
+              />
+
+              {/* Pulsing ring on hover/active */}
+              {(isHovered || isActive) && !isDimmed && (
+                <motion.circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={12}
+                  fill="none"
+                  stroke={cat.color}
+                  strokeWidth={1.5}
+                  initial={{ scale: 0.8, opacity: 1 }}
+                  animate={{ scale: 1.8, opacity: 0 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
+                  style={{ pointerEvents: 'none' }}
+                />
+              )}
+            </g>
+          );
+        })}
+
+        {/* Labels at the end of each axis */}
+        {CATS.map((cat, i) => {
+          const labelR = maxR + 24;
+          const p = polarToXY(i * step, labelR, cx, cy);
+          const isLeft = p.x < cx - 10;
+          const isRight = p.x > cx + 10;
+          const isHovered = hoveredNode === i;
+          const isActive = active === i;
+          const isDimmed = hoveredNode !== null && !isHovered;
+
+          return (
+            <motion.text
+              key={cat.title + '-label'}
+              x={p.x}
+              y={p.y}
+              textAnchor={isLeft ? 'end' : isRight ? 'start' : 'middle'}
+              dominantBaseline="central"
+              fill={isActive || isHovered ? cat.color : 'rgba(255,255,255,0.5)'}
+              fontSize="10"
+              fontWeight={isActive || isHovered ? '700' : '500'}
+              fontFamily="var(--font-heading)"
+              className={styles.radarLabel}
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: isDimmed ? 0.2 : 1 } : {}}
+              transition={{ delay: 0.8 + i * 0.1, duration: 0.5 }}
+              style={{ cursor: 'pointer', transition: 'fill 0.2s, opacity 0.2s' }}
+              onClick={() => setActive(i)}
+              onMouseEnter={() => setHoveredNode(i)}
+            >
+              {cat.title}
+            </motion.text>
+          );
+        })}
+      </svg>
+      
+      {/* Central interactive tooltip */}
+      <AnimatePresence>
+        {(hoveredNode !== null || active !== null) && (
+          <motion.div 
+            className={styles.radarTooltipCenter}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            style={{ pointerEvents: 'none' }}
+          >
+            <span className={styles.ttCenterLabel}>
+              {CATS[hoveredNode !== null ? hoveredNode : active].title}
+            </span>
+            <span 
+              className={styles.ttCenterVal} 
+              style={{ color: CATS[hoveredNode !== null ? hoveredNode : active].color }}
+            >
+              {CATS[hoveredNode !== null ? hoveredNode : active].level}%
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-/* ─── 3D tilt card ─── */
-function TiltCard({ children, className, color, inView }) {
-  const ref = useRef(null);
-  const mx  = useMotionValue(0);
-  const my  = useMotionValue(0);
-  const rx  = useTransform(my, [-35, 35], [7, -7]);
-  const ry  = useTransform(mx, [-35, 35], [-7, 7]);
-  const srx = useSpring(rx, { stiffness: 280, damping: 28 });
-  const sry = useSpring(ry, { stiffness: 280, damping: 28 });
-  const [hov, setHov] = useState(false);
+/* ─── Category selector button ─── */
+function CatButton({ cat, index, isActive, onClick, inView }) {
+  const Icon = cat.icon;
+  return (
+    <motion.button
+      className={`${styles.catBtn} ${isActive ? styles.catBtnActive : ''}`}
+      onClick={onClick}
+      style={{
+        '--cat-color': cat.color,
+        borderColor: isActive ? cat.color : 'rgba(255,255,255,0.08)',
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: 0.2 + index * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ scale: 1.04, borderColor: cat.color }}
+      whileTap={{ scale: 0.97 }}
+    >
+      {/* Active glow */}
+      {isActive && (
+        <motion.div
+          className={styles.catGlow}
+          style={{ background: `${cat.color}15` }}
+          layoutId="catGlow"
+          transition={{ type: 'spring', stiffness: 300, damping: 26 }}
+        />
+      )}
+      <span className={styles.catIcon} style={{ color: isActive ? cat.color : 'var(--color-text-muted)' }}>
+        <Icon size={18} />
+      </span>
+      <span className={styles.catTitle} style={{ color: isActive ? '#fff' : 'var(--color-text-muted)' }}>
+        {cat.title}
+      </span>
+      <span className={styles.catPct} style={{ color: cat.color }}>
+        {cat.level}%
+      </span>
+    </motion.button>
+  );
+}
 
-  const onMove  = (e) => {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
-    mx.set(e.clientX - r.left  - r.width  / 2);
-    my.set(e.clientY - r.top   - r.height / 2);
-  };
-  const onLeave = () => { mx.set(0); my.set(0); setHov(false); };
-
+/* ─── Skill tags panel ─── */
+function SkillPanel({ cat }) {
   return (
     <motion.div
-      ref={ref}
-      variants={cardVariant}
-      className={className}
-      style={{ rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d', perspective: 900 }}
-      onMouseMove={onMove}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={onLeave}
-      animate={hov
-        ? { boxShadow: `0 20px 48px ${color}28, 0 4px 16px rgba(0,0,0,0.07)`, borderColor: `${color}55` }
-        : { boxShadow: '0 2px 8px rgba(0,0,0,0.04)', borderColor: 'var(--color-border)' }
-      }
-      transition={{ duration: 0.25 }}
+      key={cat.title}
+      className={styles.skillPanel}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Animated glow ring */}
-      <motion.div
-        className={styles.glowRing}
-        style={{ borderColor: color }}
-        animate={{ opacity: hov ? 1 : 0 }}
-        transition={{ duration: 0.2 }}
-      />
-      {children}
+      <div className={styles.panelHeader}>
+        <h3 className={styles.panelTitle} style={{ color: cat.color }}>{cat.title}</h3>
+        <span className={styles.panelCount}>{cat.skills.length} skills</span>
+      </div>
+      <div className={styles.pillGrid}>
+        {cat.skills.map((skill, si) => (
+          <motion.div
+            key={skill}
+            className={styles.pill}
+            style={{ '--pill-color': cat.color }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: si * 0.05, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{
+              scale: 1.06,
+              borderColor: cat.color,
+              boxShadow: `0 0 20px ${cat.color}30`,
+            }}
+          >
+            <span className={styles.pillDot} style={{ background: cat.color, boxShadow: `0 0 8px ${cat.color}` }} />
+            <span>{skill}</span>
+          </motion.div>
+        ))}
+      </div>
     </motion.div>
   );
 }
 
-/* ─── Word-split heading ─── */
+/* ─── Word heading ─── */
 const wordV = {
-  hidden:  { opacity: 0, y: 28, skewY: 5 },
+  hidden: { opacity: 0, y: 28, skewY: 5 },
   visible: (i) => ({
     opacity: 1, y: 0, skewY: 0,
     transition: { delay: i * 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] },
@@ -176,21 +355,14 @@ const wordV = {
 };
 const WORDS = ['The', 'Toolkit', 'I', 'Bring'];
 
+/* ─── Main component ─── */
 export default function Skills() {
   const [hRef, hInView] = useInView({ triggerOnce: true, threshold: 0.3 });
   const [gRef, gInView] = useInView({ triggerOnce: true, threshold: 0.06 });
+  const [active, setActive] = useState(0);
 
   return (
     <section id="skills" className={`section ${styles.section}`} aria-labelledby="skills-heading">
-      {/* Ambient shimmer */}
-      <motion.div
-        className={styles.shimmer}
-        initial={{ opacity: 0 }}
-        animate={hInView ? { opacity: 1 } : {}}
-        transition={{ duration: 1.4 }}
-        aria-hidden="true"
-      />
-
       <div className="container">
         {/* ── Header ── */}
         <div ref={hRef} className={styles.header}>
@@ -225,7 +397,7 @@ export default function Skills() {
               animate={hInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.38, duration: 0.5 }}
             >
-              Full-stack analytics — from pipelines to presentations.
+              Full-stack data science — from raw data to production ML systems.
             </motion.p>
             <motion.div
               className={styles.subLine}
@@ -236,105 +408,34 @@ export default function Skills() {
           </div>
         </div>
 
-        {/* ── Cards grid ── */}
-        <motion.div
-          ref={gRef}
-          className={styles.grid}
-          variants={gridStagger}
-          initial="hidden"
-          animate={gInView ? 'visible' : 'hidden'}
-        >
-          {CATS.map((cat, ci) => {
-            const Icon = cat.icon;
-            return (
-              <TiltCard
+        {/* ── Main content: radar + controls ── */}
+        <div ref={gRef} className={styles.layout}>
+          {/* Left: category selector buttons */}
+          <div className={styles.sidebar}>
+            {CATS.map((cat, i) => (
+              <CatButton
                 key={cat.title}
-                className={`${styles.card} ${cat.featured ? styles.featured : ''}`}
-                color={cat.color}
+                cat={cat}
+                index={i}
+                isActive={active === i}
+                onClick={() => setActive(i)}
                 inView={gInView}
-              >
-                {/* Draw-in top border */}
-                <motion.div
-                  className={styles.topBorder}
-                  style={{ background: `linear-gradient(90deg, ${cat.color}, ${cat.color}66)` }}
-                  initial={{ scaleX: 0, originX: 0 }}
-                  animate={gInView ? { scaleX: 1 } : {}}
-                  transition={{ delay: ci * 0.1 + 0.25, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                />
+              />
+            ))}
+          </div>
 
-                {/* Card header row */}
-                <div className={styles.cardHeader}>
-                  <motion.div
-                    className={styles.iconBox}
-                    style={{ background: `${cat.color}12`, color: cat.color }}
-                    variants={iconVariant}
-                    whileHover={{ rotate: [0, -12, 12, 0], scale: 1.1, transition: { duration: 0.4 } }}
-                  >
-                    <Icon size={cat.featured ? 22 : 20} />
-                  </motion.div>
+          {/* Center: radar chart */}
+          <div className={styles.center}>
+            <RadarChart active={active} setActive={setActive} inView={gInView} />
+          </div>
 
-                  {/* Skill count badge */}
-                  <motion.span
-                    className={styles.countBadge}
-                    style={{ background: `${cat.color}10`, color: cat.color, borderColor: `${cat.color}30` }}
-                    initial={{ opacity: 0, scale: 0.7 }}
-                    animate={gInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ delay: ci * 0.1 + 0.45, type: 'spring', stiffness: 300 }}
-                  >
-                    <FiZap size={10} />
-                    {cat.skills.length} skills
-                  </motion.span>
-                </div>
-
-                {/* Title + context */}
-                <div>
-                  <motion.h3
-                    className={styles.cardTitle}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={gInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: ci * 0.1 + 0.22, duration: 0.42 }}
-                  >
-                    {cat.title}
-                  </motion.h3>
-                  <motion.p
-                    className={styles.cardContext}
-                    initial={{ opacity: 0 }}
-                    animate={gInView ? { opacity: 1 } : {}}
-                    transition={{ delay: ci * 0.1 + 0.32, duration: 0.4 }}
-                  >
-                    {cat.context}
-                  </motion.p>
-                </div>
-
-                {/* Proficiency bar */}
-                <div className={styles.profRow}>
-                  <span className={styles.levelLabel} style={{ color: cat.color }}>{cat.levelLabel}</span>
-                  <ProfBar level={cat.level} color={cat.color} inView={gInView} />
-                </div>
-
-                {/* Tags */}
-                <motion.div className={styles.tags} variants={tagStagger} initial="hidden" animate={gInView ? 'visible' : 'hidden'}>
-                  {cat.skills.map(s => (
-                    <motion.span
-                      key={s}
-                      variants={tagVariant}
-                      className={styles.tag}
-                      whileHover={{
-                        scale: 1.08,
-                        background: `${cat.color}0F`,
-                        borderColor: cat.color,
-                        color: cat.color,
-                        transition: { duration: 0.15 },
-                      }}
-                    >
-                      {s}
-                    </motion.span>
-                  ))}
-                </motion.div>
-              </TiltCard>
-            );
-          })}
-        </motion.div>
+          {/* Right: active skill panel */}
+          <div className={styles.rightPanel}>
+            <AnimatePresence mode="wait">
+              <SkillPanel cat={CATS[active]} />
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </section>
   );

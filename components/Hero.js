@@ -29,15 +29,17 @@ const fadeRight = {
 };
 
 /* ── Bar chart data (weekly model performance) ── */
+import { useState, useEffect } from 'react';
+
 const BARS = [
-  { pct: 44, color: '#3a3b3d' },
-  { pct: 59, color: '#444649' },
-  { pct: 48, color: '#3a3b3d' },
-  { pct: 76, color: '#4e5054' },
-  { pct: 63, color: '#444649' },
-  { pct: 94, color: null },     // peak — uses gradient
-  { pct: 70, color: '#3a3b3d' },
-  { pct: 82, color: '#444649' },
+  { label: 'Wk 1', pct: 44, color: '#3a3b3d' },
+  { label: 'Wk 2', pct: 59, color: '#444649' },
+  { label: 'Wk 3', pct: 48, color: '#3a3b3d' },
+  { label: 'Wk 4', pct: 76, color: '#4e5054' },
+  { label: 'Wk 5', pct: 63, color: '#444649' },
+  { label: 'Wk 6', pct: 94, color: null },     // peak — uses gradient
+  { label: 'Wk 7', pct: 70, color: '#3a3b3d' },
+  { label: 'Wk 8', pct: 82, color: '#444649' },
 ];
 const SVG_H = 108;
 const BAR_W = 20;
@@ -55,9 +57,54 @@ const FLOATS = [
     pos: { bottom: '-0.7rem', right: '1.1rem' }, delay: 1.08 },
 ];
 
+/* ── Animated counter ── */
+function useCounter(target, duration = 1200, inView = false) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const startTime = performance.now();
+    const isFloat = target % 1 !== 0;
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = eased * target;
+      setCount(isFloat ? parseFloat(current.toFixed(1)) : Math.round(current));
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }, [target, duration, inView]);
+  return count;
+}
+
+/* ── Metric cell with animated counter ── */
+function MetricCell({ label, value, color, delay, inView }) {
+  const count = useCounter(value, 1400, inView);
+  return (
+    <motion.div
+      className={styles.metricItem}
+      initial={{ opacity: 0, y: 10 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay, duration: 0.38 }}
+      whileHover={{ scale: 1.08, transition: { duration: 0.2 } }}
+    >
+      <span className={styles.metricVal} style={{ color }}>{count}%</span>
+      <span className={styles.metricLabel}>{label}</span>
+    </motion.div>
+  );
+}
+
 /* ─── Analytics card (right panel) ─── */
 function AnalyticsCard() {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.25 });
+  const [hoveredBar, setHoveredBar] = useState(null);
+
+  // Generate line path connecting bar centers
+  const linePoints = BARS.map((bar, i) => {
+    const x = i * STEP + BAR_W / 2;
+    const y = SVG_H - (bar.pct / 100) * SVG_H;
+    return `${x},${y}`;
+  }).join(' L ');
 
   return (
     <div ref={ref} className={styles.vizWrap}>
@@ -101,11 +148,12 @@ function AnalyticsCard() {
           </span>
         </div>
 
-        {/* Bar chart */}
+        {/* Interactive bar chart */}
         <div className={styles.chartWrap}>
           <svg
             viewBox={`0 0 ${SVG_W} ${SVG_H + 2}`}
             className={styles.chartSvg}
+            onMouseLeave={() => setHoveredBar(null)}
             aria-hidden="true"
           >
             <defs>
@@ -123,54 +171,113 @@ function AnalyticsCard() {
                 stroke="#3a3b3d" strokeWidth="1" strokeDasharray="3 5"
               />
             ))}
-            {/* Baseline */}
             <line x1="0" y1={SVG_H} x2={SVG_W} y2={SVG_H} stroke="#3a3b3d" strokeWidth="1" />
 
-            {/* Animated bars — grow from bottom */}
+            {/* Animated bars with hover interactions */}
             {BARS.map((bar, bi) => {
               const h = (bar.pct / 100) * SVG_H;
+              const isHovered = hoveredBar === bi;
+              const isAnyHovered = hoveredBar !== null;
               return (
-                <motion.rect
-                  key={bi}
-                  x={bi * STEP}
-                  width={BAR_W}
-                  rx={4}
-                  fill={bar.color ?? 'url(#peakGrad)'}
-                  opacity={bar.color ? 0.82 : 1}
-                  initial={{ y: SVG_H, height: 0 }}
-                  animate={inView
-                    ? { y: SVG_H - h, height: h }
-                    : { y: SVG_H, height: 0 }
-                  }
-                  transition={{
-                    delay: 0.48 + bi * 0.07,
-                    duration: 0.68,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
+                <g key={bi} onMouseEnter={() => setHoveredBar(bi)} style={{ cursor: 'pointer' }}>
+                  {/* Wider invisible hit area */}
+                  <rect x={bi * STEP - GAP / 2} y={0} width={STEP} height={SVG_H} fill="transparent" />
+                  <motion.rect
+                    x={bi * STEP}
+                    width={BAR_W}
+                    rx={4}
+                    fill={bar.color ?? 'url(#peakGrad)'}
+                    initial={{ y: SVG_H, height: 0 }}
+                    animate={inView
+                      ? { y: SVG_H - h, height: h, opacity: isAnyHovered ? (isHovered ? 1 : 0.3) : (bar.color ? 0.82 : 1) }
+                      : { y: SVG_H, height: 0, opacity: 0 }
+                    }
+                    transition={{
+                      opacity: { duration: 0.2 },
+                      y:      { delay: 0.48 + bi * 0.07, duration: 0.68, ease: [0.22, 1, 0.36, 1] },
+                      height: { delay: 0.48 + bi * 0.07, duration: 0.68, ease: [0.22, 1, 0.36, 1] },
+                    }}
+                  />
+                  {/* Hover highlight glow */}
+                  {isHovered && (
+                    <motion.rect
+                      x={bi * STEP - 2}
+                      width={BAR_W + 4}
+                      rx={6}
+                      y={SVG_H - h - 2}
+                      height={h + 4}
+                      fill="none"
+                      stroke={bar.color ?? '#04d06d'}
+                      strokeWidth="1.5"
+                      strokeOpacity="0.4"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.15 }}
+                    />
+                  )}
+                </g>
+              );
+            })}
+
+            {/* Animated trend line connecting bar tops */}
+            <motion.path
+              d={`M ${linePoints}`}
+              fill="none"
+              stroke="#04d06d"
+              strokeWidth="2"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              strokeOpacity="0.7"
+              initial={{ pathLength: 0 }}
+              animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
+              transition={{ delay: 1.2, duration: 1.2, ease: 'easeInOut' }}
+              style={{ pointerEvents: 'none' }}
+            />
+
+            {/* Dots at line vertices */}
+            {BARS.map((bar, bi) => {
+              const cx = bi * STEP + BAR_W / 2;
+              const cy = SVG_H - (bar.pct / 100) * SVG_H;
+              return (
+                <motion.circle
+                  key={`dot-${bi}`}
+                  cx={cx} cy={cy} r={hoveredBar === bi ? 5 : 3}
+                  fill={hoveredBar === bi ? '#04d06d' : '#1c1d1f'}
+                  stroke="#04d06d"
+                  strokeWidth="1.5"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={inView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ delay: 1.3 + bi * 0.08, type: 'spring', stiffness: 300 }}
+                  style={{ pointerEvents: 'none', filter: hoveredBar === bi ? 'drop-shadow(0 0 4px #04d06d)' : 'none' }}
                 />
               );
             })}
           </svg>
+
+          {/* Tooltip on hover */}
+          {hoveredBar !== null && (
+            <motion.div
+              className={styles.tooltip}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                left: `${((hoveredBar * STEP + BAR_W / 2) / SVG_W) * 100}%`,
+                bottom: `${(BARS[hoveredBar].pct / 100) * 100 + 14}%`,
+              }}
+            >
+              <span className={styles.ttLabel}>{BARS[hoveredBar].label}</span>
+              <span className={styles.ttVal} style={{ color: BARS[hoveredBar].color || '#04d06d' }}>
+                {BARS[hoveredBar].pct}%
+              </span>
+            </motion.div>
+          )}
         </div>
 
-        {/* Metric labels */}
+        {/* Animated metric counters */}
         <div className={styles.metricRow}>
-          {[
-            { l: 'Accuracy', v: '94.2%', c: '#04d06d' },
-            { l: 'Recall',   v: '91.8%', c: '#4add97' },
-            { l: 'F1-Score', v: '93.0%', c: '#baf269' },
-          ].map(({ l, v, c }, mi) => (
-            <motion.div
-              key={l}
-              className={styles.metricItem}
-              initial={{ opacity: 0, y: 10 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 1.0 + mi * 0.09, duration: 0.38 }}
-            >
-              <span className={styles.metricVal} style={{ color: c }}>{v}</span>
-              <span className={styles.metricLabel}>{l}</span>
-            </motion.div>
-          ))}
+          <MetricCell label="Accuracy" value={94.2} color="#04d06d" delay={1.0} inView={inView} />
+          <MetricCell label="Recall"   value={91.8} color="#4add97" delay={1.09} inView={inView} />
+          <MetricCell label="F1-Score" value={93.0} color="#baf269" delay={1.18} inView={inView} />
         </div>
       </motion.div>
     </div>
@@ -203,10 +310,10 @@ export default function Hero() {
           <motion.div className={styles.roleWrap} variants={fadeLeft} initial="hidden" animate="visible" custom={2}>
             <TypeAnimation
               sequence={[
-                'Enterprise Analytics Manager', 2400,
-                'Data Science Practitioner',    2000,
-                'BI & Cloud Architect',         2000,
-                'Predictive Modeling Expert',   2000,
+                'Data Scientist', 2400,
+                'ML Engineer', 2000,
+                'Analytics Manager', 2000,
+                'Predictive Modeling Expert', 2000,
               ]}
               repeat={Infinity}
               wrapper="span"
@@ -227,14 +334,14 @@ export default function Hero() {
             >
               View Projects <FiArrowRight />
             </button>
-            <a href="mailto:keerthisagarchegondi@gmail.com" className="btn-outline">
+            <a href="mailto:ckeerthisagar@gmail.com" className="btn-outline">
               <FiMail /> Say Hello
             </a>
           </motion.div>
 
           <motion.div className={styles.socials} variants={fadeLeft} initial="hidden" animate="visible" custom={5}>
             <a
-              href="https://www.linkedin.com/in/keerthisagarch"
+              href="https://www.linkedin.com/in/keerthisagarchegondi"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.socialBtn}
@@ -242,7 +349,7 @@ export default function Hero() {
             >
               <FiLinkedin size={18} />
             </a>
-            <a href="mailto:keerthisagarchegondi@gmail.com" className={styles.socialBtn} aria-label="Email">
+            <a href="mailto:ckeerthisagar@gmail.com" className={styles.socialBtn} aria-label="Email">
               <FiMail size={18} />
             </a>
           </motion.div>
@@ -262,7 +369,7 @@ export default function Hero() {
         transition={{ delay: 0.75, duration: 0.6 }}
       >
         {[
-          { n: '6+', l: 'Years' },
+          { n: '7+', l: 'Years' },
           { n: '3',  l: 'Industries' },
           { n: 'MS', l: 'Analytics' },
         ].map(s => (

@@ -89,7 +89,7 @@ export default function Navbar() {
 
         {/* CTA */}
         <a
-          href="mailto:keerthisagarchegondi@gmail.com"
+          href="mailto:ckeerthisagar@gmail.com"
           className={styles.cta}
           aria-label="Email Keerthi"
         >
@@ -131,7 +131,7 @@ export default function Navbar() {
                 </motion.button>
               ))}
               <motion.a
-                href="mailto:keerthisagarchegondi@gmail.com"
+                href="mailto:ckeerthisagar@gmail.com"
                 className="btn-primary"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

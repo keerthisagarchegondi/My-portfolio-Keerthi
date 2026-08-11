@@ -8,8 +8,8 @@ import { FiMail, FiLinkedin, FiMapPin, FiPhone } from 'react-icons/fi';
 import styles from './Contact.module.css';
 
 const INFO = [
-  { icon: FiLinkedin, label: 'LinkedIn',  value: 'keerthisagarch',            href: 'https://www.linkedin.com/in/keerthisagarch', color: '#04d06d' },
-  { icon: FiMail,     label: 'Email',     value: 'keerthisagarchegondi@gmail.com', href: 'mailto:keerthisagarchegondi@gmail.com',           color: '#4add97' },
+  { icon: FiLinkedin, label: 'LinkedIn',  value: 'keerthisagarchegondi',            href: 'https://www.linkedin.com/in/keerthisagarchegondi', color: '#04d06d' },
+  { icon: FiMail,     label: 'Email',     value: 'ckeerthisagar@gmail.com', href: 'mailto:ckeerthisagar@gmail.com',           color: '#4add97' },
   { icon: FiPhone,    label: 'Phone',     value: '(602) 580-3684',            href: 'tel:+16025803684',                           color: '#baf269' },
   { icon: FiMapPin,   label: 'Location',  value: 'Cincinnati, OH',            href: null,                                         color: '#02b85f' },
 ];
