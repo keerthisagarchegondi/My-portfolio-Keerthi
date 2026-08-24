@@ -12,43 +12,54 @@ import styles from './Projects.module.css';
 /* ─── Project data ─── */
 const PROJECTS = [
   {
-    emoji:    '💬',
-    tag:      'NLP',
-    title:    'NLP-Based Sentiment Analysis Pipeline',
-    desc:     'Built an end-to-end NLP pipeline using Hugging Face Transformers (BERT) and spaCy to analyze and cluster customer support conversations at scale, extracting sentiment scores and topic patterns from unstructured chat data.',
-    impact:   ['Sentiment scores extracted', 'Topic patterns identified', 'Power BI integration'],
-    stack:    ['Hugging Face', 'BERT', 'spaCy', 'Python', 'Power BI'],
-    color:    '#04d06d',
+    emoji: '🤖',
+    tag: 'AI & Algorithms',
+    title: 'Dijkstra vs ML vs DL',
+    desc: 'A visual comparison and analysis of pathfinding algorithms (Dijkstra) versus Machine Learning and Deep Learning approaches for solving navigation and routing problems.',
+    impact: ['Algorithm comparison', 'Performance analysis', 'Visual representation'],
+    stack: ['Python', 'Algorithms', 'Machine Learning', 'Deep Learning'],
+    color: '#f2994a',
+    featured: true,
+    video: '/dijkstra_vs_ml_vs_dl.mp4',
+  },
+  {
+    emoji: '💬',
+    tag: 'NLP',
+    title: 'NLP-Based Sentiment Analysis Pipeline',
+    desc: 'Built an end-to-end NLP pipeline using Hugging Face Transformers (BERT) and spaCy to analyze and cluster customer support conversations at scale, extracting sentiment scores and topic patterns from unstructured chat data.',
+    impact: ['Sentiment scores extracted', 'Topic patterns identified', 'Power BI integration'],
+    stack: ['Hugging Face', 'BERT', 'spaCy', 'Python', 'Power BI'],
+    color: '#04d06d',
     featured: true,
   },
   {
-    emoji:    '📊',
-    tag:      'Sentiment Analysis',
-    title:    'Customer Service Sentiment Analysis',
-    desc:     'Sentiment analysis pipeline on unstructured chat data using NLTK, BERT, and clustering techniques to identify service quality discrepancies across customer interactions.',
-    impact:   ['Quality discrepancies flagged', 'Data-driven insights', 'Cluster visualization'],
-    stack:    ['NLTK', 'BERT', 'Clustering', 'Power BI'],
-    color:    '#4add97',
+    emoji: '📊',
+    tag: 'Sentiment Analysis',
+    title: 'Customer Service Sentiment Analysis',
+    desc: 'Sentiment analysis pipeline on unstructured chat data using NLTK, BERT, and clustering techniques to identify service quality discrepancies across customer interactions.',
+    impact: ['Quality discrepancies flagged', 'Data-driven insights', 'Cluster visualization'],
+    stack: ['NLTK', 'BERT', 'Clustering', 'Power BI'],
+    color: '#4add97',
     featured: false,
   },
   {
-    emoji:    '🚗',
-    tag:      'Computer Vision',
-    title:    'Real-Time Traffic Object Detection',
-    desc:     'Real-time vehicle and pedestrian detection system using ResNet50 pretrained on the COCO dataset, processed through OpenCV for frame extraction and detection visualization.',
-    impact:   ['Real-time detection', 'Frame extraction', 'Live visualization'],
-    stack:    ['TensorFlow', 'Keras', 'OpenCV', 'Python'],
-    color:    '#baf269',
+    emoji: '🚗',
+    tag: 'Computer Vision',
+    title: 'Real-Time Traffic Object Detection',
+    desc: 'Real-time vehicle and pedestrian detection system using ResNet50 pretrained on the COCO dataset, processed through OpenCV for frame extraction and detection visualization.',
+    impact: ['Real-time detection', 'Frame extraction', 'Live visualization'],
+    stack: ['TensorFlow', 'Keras', 'OpenCV', 'Python'],
+    color: '#baf269',
     featured: false,
   },
   {
-    emoji:    '🏀',
-    tag:      'Topic Modeling',
-    title:    'NBA Topic Modeling (LDA)',
-    desc:     'Applied LDA topic modeling to NBA game data to uncover thematic patterns in player performance narratives, identifying distinct playing styles and game strategy patterns.',
-    impact:   ['Thematic patterns uncovered', 'Performance clusters', 'Strategy insights'],
-    stack:    ['Python', 'NLP', 'LDA', 'Text Preprocessing'],
-    color:    '#02b85f',
+    emoji: '🏀',
+    tag: 'Topic Modeling',
+    title: 'NBA Topic Modeling (LDA)',
+    desc: 'Applied LDA topic modeling to NBA game data to uncover thematic patterns in player performance narratives, identifying distinct playing styles and game strategy patterns.',
+    impact: ['Thematic patterns uncovered', 'Performance clusters', 'Strategy insights'],
+    stack: ['Python', 'NLP', 'LDA', 'Text Preprocessing'],
+    color: '#02b85f',
     featured: false,
   },
 ];
@@ -127,6 +138,26 @@ function ProjectDisplay({ project }) {
       >
         {project.desc}
       </motion.p>
+
+      {/* Video */}
+      {project.video && (
+        <motion.div
+          className={styles.videoWrapper}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+        >
+          <video
+            src={project.video}
+            controls
+            autoPlay
+            loop
+            muted
+            playsInline
+            className={styles.projectVideo}
+          />
+        </motion.div>
+      )}
 
       {/* Impact metrics */}
       <div className={styles.impactSection}>

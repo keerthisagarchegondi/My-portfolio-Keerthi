@@ -13,6 +13,7 @@
   z-index: 1;
   margin-bottom: 3rem;
 }
+
 .heading {
   display: flex;
   flex-wrap: wrap;
@@ -20,9 +21,22 @@
   overflow: visible;
   margin-bottom: 0;
 }
-.headWord { display: inline-block; line-height: 1.15; }
-.subWrap  { position: relative; width: fit-content; margin-top: 0.6rem; }
-.sub      { margin-bottom: 0.5rem; }
+
+.headWord {
+  display: inline-block;
+  line-height: 1.15;
+}
+
+.subWrap {
+  position: relative;
+  width: fit-content;
+  margin-top: 0.6rem;
+}
+
+.sub {
+  margin-bottom: 0.5rem;
+}
+
 .subLine {
   height: 2px;
   border-radius: 1px;
@@ -74,6 +88,7 @@
   justify-content: space-between;
   gap: 1rem;
 }
+
 .emojiBox {
   width: 52px;
   height: 52px;
@@ -83,15 +98,18 @@
   justify-content: center;
   flex-shrink: 0;
 }
+
 .emoji {
   font-size: 1.5rem;
   line-height: 1;
 }
+
 .badgeRow {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
 .tagBadge {
   display: inline-flex;
   align-items: center;
@@ -103,6 +121,7 @@
   border: 1px solid;
   white-space: nowrap;
 }
+
 .featBadge {
   display: inline-flex;
   align-items: center;
@@ -134,12 +153,30 @@
   line-height: 1.75;
 }
 
+/* Video */
+.videoWrapper {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.projectVideo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* Impact section */
 .impactSection {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
+
 .impactLabel {
   font-size: 0.65rem;
   font-weight: 800;
@@ -147,11 +184,13 @@
   letter-spacing: 0.1em;
   color: var(--color-text-muted);
 }
+
 .impactList {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+
 .impactItem {
   display: inline-flex;
   align-items: center;
@@ -164,6 +203,7 @@
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 .impactDot {
   width: 6px;
   height: 6px;
@@ -177,6 +217,7 @@
   flex-direction: column;
   gap: 0.6rem;
 }
+
 .stackLabel {
   font-size: 0.65rem;
   font-weight: 800;
@@ -184,11 +225,13 @@
   letter-spacing: 0.1em;
   color: var(--color-text-muted);
 }
+
 .stackList {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
 }
+
 .stackPill {
   display: inline-flex;
   align-items: center;
@@ -209,6 +252,7 @@
   flex-direction: column;
   gap: 0.6rem;
 }
+
 .tabsLabel {
   font-size: 0.65rem;
   font-weight: 800;
@@ -233,10 +277,12 @@
   overflow: hidden;
   font-family: inherit;
 }
+
 .tab:hover {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.1);
 }
+
 .tabActive {
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--tab-color) !important;
@@ -257,6 +303,7 @@
   line-height: 1;
   flex-shrink: 0;
 }
+
 .tabContent {
   flex: 1;
   min-width: 0;
@@ -264,6 +311,7 @@
   flex-direction: column;
   gap: 0.15rem;
 }
+
 .tabTitle {
   font-size: 0.8rem;
   font-weight: 700;
@@ -274,15 +322,18 @@
   text-overflow: ellipsis;
   transition: color 0.3s;
 }
+
 .tabTag {
   font-size: 0.65rem;
   font-weight: 600;
   transition: color 0.3s;
 }
+
 .tabArrow {
   flex-shrink: 0;
   transition: color 0.3s, transform 0.3s;
 }
+
 .tabActive .tabArrow {
   transform: translateX(2px);
 }
@@ -293,16 +344,19 @@
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+
   .tabs {
     order: -1;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
+
   .tab {
     flex: 1 1 auto;
     min-width: 180px;
   }
+
   .tabIndicator {
     left: 15%;
     right: 15%;
@@ -312,6 +366,7 @@
     height: 3px;
     border-radius: 3px 3px 0 0;
   }
+
   .displayWrap {
     min-height: auto;
   }
@@ -321,13 +376,16 @@
   .display {
     padding: 1.4rem;
   }
+
   .displayTitle {
     font-size: 1.15rem;
   }
+
   .tab {
     min-width: 150px;
     padding: 0.8rem;
   }
+
   .tabTitle {
     font-size: 0.72rem;
   }
