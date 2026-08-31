@@ -12,6 +12,17 @@ import styles from './Projects.module.css';
 /* ─── Project data ─── */
 const PROJECTS = [
   {
+    emoji: '🎲',
+    tag: 'Simulation & Analysis',
+    title: 'Autonomous Property Trading Simulation',
+    desc: 'Simulated 10,000 games with 4 autonomous AI landlords to evaluate capital allocation strategies. Analyzed 40,000 outcomes using statistical testing alongside a custom cinematic renderer.',
+    impact: ['Strategy Analysis', '10k Simulations', 'Custom Renderer'],
+    stack: ['Python', 'Simulation Engine', 'Statistical Testing'],
+    color: '#8b5cf6',
+    featured: true,
+    video: '/project3_property_trading_cinematic_v3_60s.mp4',
+  },
+  {
     emoji: '🤖',
     tag: 'AI & Algorithms',
     title: 'Dijkstra vs ML vs DL',
