@@ -1,0 +1,189 @@
+{
+  "campaign_detail": {
+    "fields": [
+      "attributed_sales",
+      "attributed_orders",
+      "attributed_items",
+      "eligible_assigned_households",
+      "attributed_households",
+      "aov",
+      "items_per_order",
+      "sales_per_household",
+      "sales_share",
+      "order_share",
+      "units_share",
+      "attribution_rank"
+    ],
+    "method_reactive": true
+  },
+  "campaign_table": {
+    "columns": [
+      {
+        "field": "campaign_label",
+        "label": "Campaign"
+      },
+      {
+        "field": "campaign_type",
+        "label": "Campaign Type"
+      },
+      {
+        "definition": "Distinct assigned households represented by at least one eligible basket path in the active campaign window.",
+        "field": "eligible_assigned_households",
+        "label": "Eligible Assigned Households"
+      },
+      {
+        "definition": "Distinct households with positive campaign attribution weight under the selected method.",
+        "field": "attributed_households",
+        "label": "Attributed Households"
+      },
+      {
+        "field": "attributed_orders",
+        "format": "number_1",
+        "label": "Attributed Orders"
+      },
+      {
+        "field": "attributed_sales",
+        "format": "currency_2",
+        "label": "Attributed Sales"
+      },
+      {
+        "definition": "Transaction-line count allocated using the accepted attribution weight.",
+        "field": "attributed_items",
+        "format": "number_1",
+        "label": "Attributed Items"
+      },
+      {
+        "field": "aov",
+        "format": "currency_2",
+        "label": "AOV"
+      },
+      {
+        "definition": "Attributed Items divided by Attributed Orders.",
+        "field": "items_per_order",
+        "format": "number_2",
+        "label": "Items / Order"
+      },
+      {
+        "field": "sales_per_household",
+        "format": "currency_2",
+        "label": "Sales / Household"
+      },
+      {
+        "field": "sales_share",
+        "format": "percent_1",
+        "label": "Sales Share"
+      },
+      {
+        "field": "attribution_rank",
+        "format": "integer",
+        "label": "Attribution Rank"
+      }
+    ],
+    "default_sort": "attribution_rank",
+    "method_reactive": true
+  },
+  "default_method": "FIRST_TOUCH",
+  "kpi_cards": [
+    {
+      "field": "attributed_sales",
+      "format": "currency_2",
+      "label": "Attributed Sales",
+      "scope": "selected_campaign"
+    },
+    {
+      "field": "attributed_orders",
+      "format": "number_1",
+      "label": "Attributed Orders",
+      "scope": "selected_campaign"
+    },
+    {
+      "field": "aov",
+      "format": "currency_2",
+      "label": "AOV",
+      "scope": "selected_campaign"
+    },
+    {
+      "field": "sales_per_household",
+      "format": "currency_2",
+      "label": "Sales / Household",
+      "scope": "selected_campaign"
+    }
+  ],
+  "method_comparison": {
+    "primary_metric": "attributed_sales",
+    "secondary_metrics": [
+      "aov",
+      "items_per_order",
+      "sales_per_household",
+      "attribution_rank"
+    ],
+    "status": "MEASURED_NONZERO",
+    "strongest_example_campaign": 18,
+    "title": "How Attribution Method Changes Campaign Value"
+  },
+  "method_selector": [
+    {
+      "id": "FIRST_TOUCH",
+      "label": "First Touch"
+    },
+    {
+      "id": "LAST_TOUCH",
+      "label": "Last Touch"
+    },
+    {
+      "id": "LINEAR",
+      "label": "Linear"
+    },
+    {
+      "id": "POSITION_BASED",
+      "label": "Position Based"
+    },
+    {
+      "id": "TIME_DECAY",
+      "label": "Time Decay"
+    }
+  ],
+  "page_subtitle": "Descriptive allocation of observed dunnhumby basket value across active household campaign assignments.",
+  "page_title": "Campaign Attribution Performance",
+  "primary_chart": {
+    "method_reactive": true,
+    "sort": "attribution_rank_ascending",
+    "title": "Top Campaigns by Attributed Sales",
+    "x": "campaign_label",
+    "y": "attributed_sales"
+  },
+  "primary_ranking_metric": "ATTRIBUTED_SALES",
+  "prohibited_claims": [
+    "CAUSAL_LIFT",
+    "INCREMENTAL_SALES",
+    "OBSERVED_IMPRESSION",
+    "OBSERVED_CLICK",
+    "OBSERVED_EXPOSURE_TIMESTAMP"
+  ],
+  "prohibited_media_metrics": [
+    "CRITEO_IMPRESSIONS",
+    "CRITEO_CLICKS",
+    "MEDIA_COST_INDEX",
+    "MCI",
+    "CPA",
+    "ROAS",
+    "IROAS"
+  ],
+  "route": "#/attribution",
+  "schema_version": "attribution-dashboard-presentation-v1",
+  "semantic_disclosures": [
+    "Campaign assignment is not an observed impression or click.",
+    "Campaign START_DAY is an ordering proxy, not an observed exposure timestamp.",
+    "Attribution is descriptive allocation and must not be interpreted as causal lift.",
+    "Attributed Households is non-additive across campaigns.",
+    "AOV and UPT are calculated from aggregated attributed values, not averaged row ratios.",
+    "Signed source Sales and Units are preserved without clipping.",
+    "Raw source QUANTITY is retained as governed evidence but is not presented as conventional UPT because extreme quantity observations dominate the raw total. Attributed Items uses normalized transaction-line count; Items / Order equals Attributed Items divided by Attributed Orders."
+  ],
+  "source_separation": {
+    "criteo_joined": false,
+    "cross_source_identity_join": false,
+    "dunnhumby_only": true
+  },
+  "status": "FROZEN_FOR_INTEGRATION"
+}

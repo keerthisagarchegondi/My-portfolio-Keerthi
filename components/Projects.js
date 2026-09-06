@@ -73,6 +73,17 @@ const PROJECTS = [
     color: '#02b85f',
     featured: false,
   },
+  {
+    emoji: '\u{1F4CA}',
+    tag: 'Retail Media & Decision Science',
+    title: 'Retail Media Audience Decision Studio',
+    desc: 'Interactive retail media decision studio combining audience segmentation, activation strategy, randomized incrementality, descriptive attribution, media performance, and customer migration into one governed decision workflow.',
+    impact: ['Audience Decisioning', 'Incrementality', 'Attribution & Migration'],
+    stack: ['Python', 'Machine Learning', 'Experimentation', 'Attribution', 'Plotly'],
+    color: '#2f80ed',
+    featured: true,
+    dashboardHref: '/retail-media-audience-decision/index.html#/overview',
+  },
 ];
 
 /* ─── Word heading variants ─── */
@@ -213,6 +224,17 @@ function ProjectDisplay({ project }) {
           ))}
         </div>
       </div>
+      {project.dashboardHref && (
+        <a
+          href={project.dashboardHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.decisionStudioCta}
+        >
+          <span>Open Decision Studio</span>
+          <FiArrowRight />
+        </a>
+      )}
     </motion.div>
   );
 }
