@@ -4,6 +4,7 @@
  * Animated transitions between projects with tech stack visualization.
  */
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { FiArrowRight, FiStar, FiZap } from 'react-icons/fi';
@@ -11,6 +12,21 @@ import styles from './Projects.module.css';
 
 /* ─── Project data ─── */
 const PROJECTS = [
+  {
+    emoji: '📈',
+    tag: 'Forecasting & Decision Science',
+    title: 'Demand Forecast & Workforce Decision Studio',
+    subtitle: 'An end-to-end forecasting operating system that compares models, governs local champions, diagnoses forecast misses and converts demand into constrained workforce decisions.',
+    desc: 'Using public M5 retail-demand data across 20 store-category demand series, compares a seasonal baseline, Holt-Winters, histogram gradient boosting (HGB), and an MLP neural-network challenger. Connects local champion governance and forecast diagnostics to constrained labor optimization, scenario testing, and decision storytelling.',
+    impact: ['HGB network WAPE: 7.94%', 'Retrospective local-champion portfolio WAPE: 7.38%', 'Matched seasonal-naïve WAPE: 10.19%', '20 store-category series', '4 forecasting approaches'],
+    caveat: 'Local-champion and matched seasonal-naïve results cover the same 19 eligible series. Champions were selected and scored on the same holdout: retrospective evidence, not future performance.',
+    stack: ['Python', 'DuckDB SQL', 'Scikit-learn', 'Statsmodels', 'SciPy HiGHS', 'Plotly', 'Matplotlib'],
+    color: '#4add97',
+    featured: true,
+    image: '/demand-forecast-workforce-decision/champion-map.png',
+    imageAlt: 'Retrospective champion map across 20 store-category series; TX_3 FOODS has no eligible champion.',
+    dashboardHref: '/demand-forecast-workforce-decision/index.html',
+  },
   {
     emoji: '🎲',
     tag: 'Simulation & Analysis',
@@ -101,7 +117,7 @@ function ProjectDisplay({ project }) {
   return (
     <motion.div
       key={project.title}
-      className={styles.display}
+      className={`${styles.display} ${project.subtitle ? styles.studioDisplay : ''}`}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
@@ -151,6 +167,8 @@ function ProjectDisplay({ project }) {
         {project.title}
       </motion.h3>
 
+      {project.subtitle && <p className={styles.displayDesc}>{project.subtitle}</p>}
+
       {/* Description */}
       <motion.p
         className={styles.displayDesc}
@@ -160,6 +178,20 @@ function ProjectDisplay({ project }) {
       >
         {project.desc}
       </motion.p>
+
+      {project.image && (
+        <div className={styles.videoWrapper}>
+          <Image
+            unoptimized
+            src={project.image}
+            alt={project.imageAlt}
+            width={1080}
+            height={1350}
+            className={styles.projectImage}
+            sizes="(max-width: 900px) 100vw, 700px"
+          />
+        </div>
+      )}
 
       {/* Video */}
       {project.video && (
@@ -198,6 +230,7 @@ function ProjectDisplay({ project }) {
             </motion.div>
           ))}
         </div>
+        {project.caveat && <p className={styles.displayDesc}>{project.caveat}</p>}
       </div>
 
       {/* Tech stack */}
@@ -333,7 +366,7 @@ export default function Projects() {
         </div>
 
         {/* ── Showcase layout ── */}
-        <div ref={gRef} className={styles.showcase}>
+        <div ref={gRef} className={`${styles.showcase} ${PROJECTS[active].subtitle ? styles.studioShowcase : ''}`}>
           {/* Left: project display */}
           <div className={styles.displayWrap}>
             <AnimatePresence mode="wait">

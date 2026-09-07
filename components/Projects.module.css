@@ -170,6 +170,32 @@
   display: block;
 }
 
+.projectImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: contain;
+  background: #fff;
+}
+
+.studioDisplay .displayTop,
+.studioDisplay .badgeRow {
+  flex-wrap: wrap;
+}
+
+.studioDisplay .tagBadge {
+  white-space: normal;
+}
+
+.studioShowcase > * {
+  min-width: 0;
+}
+
+.studioShowcase .tab {
+  max-width: 100%;
+}
+
 /* Impact section */
 .impactSection {
   display: flex;
