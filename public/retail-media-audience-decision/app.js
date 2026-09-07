@@ -9,7 +9,8 @@ const ROUTES = [
   ["incrementality", "Incrementality"],
   ["attribution", "Attribution"],
   ["data", "Data & Provenance"],
-  ["methodology", "Settings"]
+  ["methodology", "Settings"],
+  ["migration", "Migration"]
 ];
 
 const COLORS = {
@@ -4171,6 +4172,7 @@ function renderPage() {
   const isProjectOverview = window.location.hash === "#/project-overview";
   /* P25_MIGRATION_RENDERPAGE_GUARD_V2 */
   if (window.location.hash === "#/migration") {
+    setActiveNav("migration");
     return;
   }
 
