@@ -402,7 +402,7 @@
     },
     {
       "audience_id": "P02",
-      "audience_name": "Developing Core Shoppers — P02",
+      "audience_name": "High-Basket Promotion-Driven Shoppers — P02",
       "audience_type": "PRIMARY_ML_SEGMENT",
       "average_monetary_value": 3451.894946492272,
       "average_order_frequency": 69.809750297265,
@@ -416,7 +416,7 @@
     },
     {
       "audience_id": "P03",
-      "audience_name": "Developing Core Shoppers — P03",
+      "audience_name": "Low-Value Occasional Shoppers — P03",
       "audience_type": "PRIMARY_ML_SEGMENT",
       "average_monetary_value": 657.973492586491,
       "average_order_frequency": 37.761120263591,
