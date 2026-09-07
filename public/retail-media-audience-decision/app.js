@@ -1,6 +1,7 @@
 "use strict";
 
 const ROUTES = [
+  ["project-overview", "Project Overview"],
   ["overview", "Overview"],
   ["audiences", "Audience Studio"],
   ["activation", "Activation"],
@@ -435,6 +436,184 @@ function setActiveNav(
         );
       }
     );
+}
+
+// Recruiter narrative: approved synthesis of the frozen presentation/evidence
+// contracts. No analytical estimation, cross-source joins, or new metrics.
+function projectOverviewPage() {
+  const { retail, segmentation, incrementality } = state.contract;
+  const pp = value => `+${(value * 100).toFixed(3)}`;
+  const cards = (items, className = "") => items.map(([title, copy]) => `
+    <article class="panel po-card ${className}"><h3>${title}</h3><p>${copy}</p></article>
+  `).join("");
+  const sources = [
+    ["dunnhumby", "Retail behavior & household context", "Basket and sales information, audience profiles, category engagement, promotion dependency, household campaign assignments, and customer-state exports.", "Audience Studio, retail activation hypotheses, Attribution, and Migration.", "Attribution uses same-source household identifiers only. Campaign assignment is not an observed impression or click. These households are not matched to the other sources."],
+    ["Hillstrom", "Randomized email-treatment evidence", "Treatment-versus-control results, confidence intervals, and targeting-model evaluation.", "Incrementality and experiment-based activation recommendations—the randomized causal-evidence layer.", "Treatment-level conclusions are not transferred to dunnhumby audiences, Criteo campaigns, or Retailrocket visitors."],
+    ["Criteo", "Descriptive media activity", "Impressions, clicks, conversion completions, and Media Cost Index.", "Media performance and exported descriptive attribution evidence.", "MCI is a transformed index, not currency, spend, CPA, or ROAS. Criteo records are not joined into the dunnhumby campaign-attribution page."],
+    ["Retailrocket", "Behavioral event volumes", "View, addtocart, and transaction events.", "The Performance page’s funnel and measurement-investigation recommendations.", "Event volumes do not establish matched sequential customer conversion probabilities or connect visitors to another dataset."]
+  ];
+  const pillars = [
+    ["Audience Segmentation", "Read primary KMeans groups alongside overlapping secondary views of value, frequency, promotion sensitivity, category affinity, and re-engagement."],
+    ["Activation", "Combine audience opportunity with audience-size and evidence guardrails. Retail behavior supports a testable hypothesis, not an incremental-impact claim."],
+    ["Media Performance", "Track Criteo activity over source-relative time. Read Retailrocket’s separate view → addtocart → transaction event-volume funnel."],
+    ["Incrementality", "Examine Hillstrom randomized treatment effects and confidence intervals. Evaluate targeting quality separately from the treatment effect."],
+    ["Attribution", "Compare descriptive allocation of observed dunnhumby basket value across eligible household campaign assignments."],
+    ["Migration", "Use RFM lifecycle and KMeans behavioral-group views, Sankey flows, and transition matrices to inspect adjacent project-relative periods."]
+  ];
+  const story = [
+    ["Start with customer behavior", "Use dunnhumby retail profiles to understand value, frequency, recency, basket size, category engagement, and promotion dependency."],
+    ["Establish what the evidence means", "Identify each source’s population, event definitions, measurement scope, and recorded validation checks."],
+    ["Construct audience views", "Read the primary KMeans groups alongside overlapping secondary activation audiences."],
+    ["Form activation hypotheses", "Treat retail opportunity as a reason to test, subject to audience-size and evidence guardrails."],
+    ["Inspect descriptive performance", "Examine Criteo media activity and the separate Retailrocket event-volume funnel."],
+    ["Examine causal evidence", "Use the Hillstrom randomized experiment to assess treatment-level effects, while evaluating targeting quality separately."],
+    ["Compare descriptive attribution", "Explore how attribution methods allocate observed dunnhumby basket value across household campaign assignments."],
+    ["Observe customer migration", "Follow lifecycle and behavioral-group movement across project-relative periods without attributing that movement to campaigns."],
+    ["Choose the next evidence-backed step", "Consider scale with continued holdout, maintain holdout, retest, or investigate according to the recommendation’s evidence and guardrails."]
+  ];
+  const destinations = [
+    ["overview", "View the analytical overview", "See the executive summary of retail audiences, media activity, and governed recommendations."],
+    ["audiences", "Compare audience profiles", "Explore differences in value, frequency, recency, and behavioral characteristics."],
+    ["activation", "Inspect activation recommendations", "See each recommendation’s evidence, eligibility, and guardrails."],
+    ["performance", "Explore media and funnel activity", "Read Criteo performance and the separate Retailrocket event-volume funnel."],
+    ["incrementality", "Examine randomized evidence", "Compare treatment effects, confidence intervals, and targeting evaluation."],
+    ["attribution", "Compare attribution methods", "See how descriptive allocation changes dunnhumby campaign credit."],
+    ["data", "Review data and provenance", "Understand the source domains, permitted uses, and evidence boundaries."],
+    ["methodology", "Review methodology and settings", "Inspect frozen analytical assumptions and governance settings."],
+    ["migration", "Explore customer migration", "Follow lifecycle and behavioral-group movement across project-relative periods."]
+  ];
+  // The same-document Migration CTA deliberately includes the document path:
+  // migration.js's fallback lookup must only find the primary navigation link.
+  return `
+    <article class="project-overview" aria-labelledby="po-title">
+      <header class="panel po-hero">
+        <div class="page-header po-hero-copy">
+          <p class="po-eyebrow">Project Overview · Analytics & decision science</p>
+          <h1 id="po-title" tabindex="-1">Retail Media Audience <span>Decision Studio</span></h1>
+          <p class="po-lead">A portfolio decision studio connecting audience understanding, activation hypotheses, measurement, and customer migration across isolated evidence domains.</p>
+          <a class="po-button" href="#/overview">Explore the analytical overview <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="po-hero-context">
+          <div><p class="po-eyebrow">Business objective</p><p>Help stakeholders decide which audiences merit testing, what the measurement supports, and where further evidence is needed.</p></div>
+          <div><p class="po-eyebrow">Designed for</p><p>Retail-media, CRM, marketing analytics, and measurement stakeholders.</p></div>
+          <div class="po-metrics" aria-label="Retail foundation and segmentation">
+            ${kpi("Households", integer(retail.customers), "dunnhumby retail universe", "kpi-purple")}
+            ${kpi("Baskets", integer(retail.baskets), "dunnhumby retail baskets")}
+            ${kpi("Primary audiences", integer(segmentation.primary_audiences), "KMeans segmentation", "kpi-green")}
+          </div>
+        </div>
+      </header>
+
+      <section class="po-section po-problem" aria-labelledby="po-problem-title">
+        <div><p class="po-eyebrow">The business problem</p><h2 id="po-problem-title">From audience opportunity to an evidence-backed decision</h2></div>
+        <div><p>Valuable customers, strong media activity, and campaign credit answer different business questions. None alone establishes that an intervention caused an outcome.</p><p>This Studio brings those questions into one decision workflow: identify audience opportunities, assess activation readiness, inspect performance, distinguish causal evidence from descriptive credit, and monitor how customer states change.</p><p>The result is a structured basis for deciding what to test, what to keep under holdout, and what to investigate.</p></div>
+      </section>
+
+      <section class="po-section" aria-labelledby="po-data-title">
+        <p class="po-eyebrow">Data landscape</p><h2 id="po-data-title">Different sources. Explicit boundaries.</h2>
+        <p class="po-intro">Each source contributes a distinct type of evidence. The Studio combines their interpretations in one experience while keeping the source domains analytically isolated.</p>
+        <p class="callout po-boundary">No cross-source identity joins <span>The Studio does not match customers across datasets.</span></p>
+        <div class="grid grid-4 po-grid po-sources">${sources.map(([name, subtitle, contains, supports, boundary], i) => `
+          <article class="panel po-card po-source po-source-${i}"><p class="po-eyebrow">${subtitle}</p><h3>${name}</h3><p>${contains}</p><div class="po-source-support"><strong>Supports</strong><p>${supports}</p></div><div class="po-source-boundary"><strong>Boundary</strong><p>${boundary}</p></div></article>
+        `).join("")}</div>
+      </section>
+
+      <section class="po-section" aria-labelledby="po-understand-title">
+        <p class="po-eyebrow">Understanding the data</p><h2 id="po-understand-title">Understand the evidence before interpreting the result</h2>
+        <div class="grid grid-2 po-grid po-two">
+          <article class="panel po-card po-observed"><h3>Observed / validated in the artifacts</h3><p>Audience profiles expose population size, recency, purchase frequency, monetary value, average order value, category breadth, and promotion dependency.</p><p>Media and funnel exports identify event volumes and their measurement basis. Experiment records distinguish treatment from control. Attribution records define campaign and method coverage, while migration exports include customer-conservation and state-transition checks.</p><p>The attribution presentation also makes a deliberate distinction between raw source quantity and normalized transaction-line counts used for “Attributed Items.”</p></article>
+          <article class="panel po-card po-limits"><h3>Not evidenced in this portfolio export</h3><p>This checkout contains exported analytical evidence rather than the original notebooks or a complete EDA report. It does not establish the exact missing-value treatment, outlier handling, feature-engineering sequence, or every upstream validation procedure.</p><p class="po-note">Recorded validation checks are evidence in the export, not a claim that the upstream pipeline was rerun here.</p></article>
+        </div>
+      </section>
+
+      <section class="po-section" aria-labelledby="po-workflow-title">
+        <p class="po-eyebrow">How the analysis works</p><h2 id="po-workflow-title">A workflow organized around decisions</h2>
+        <p class="po-intro">These stages connect business questions. They do not pass matched customer records between sources.</p>
+        <ol class="grid grid-3 po-grid po-pillars">${pillars.map(([title, copy]) => `<li class="panel po-card"><h3>${title}</h3><p>${copy}</p></li>`).join("")}</ol>
+        <div class="grid grid-3 po-grid po-audiences">${cards([
+          ["P01 — High-Value Loyalists", "Highest average monetary value and purchase frequency among the primary groups, with the most recent median activity."],
+          ["P02 — High-Basket Promotion-Driven Shoppers", "Highest average order value and promotion dependency among the primary groups."],
+          ["P03 — Low-Value Occasional Shoppers", "Lowest average monetary value and purchase frequency, with the longest median recency among the primary groups."]
+        ])}</div>
+        <p class="po-note">The exported segmentation selects KMeans with three primary groups. Primary groups partition the retail audience. Secondary memberships overlap and must not be counted as additional unique customers.</p>
+        <p class="po-note">Migration’s exported checks preserve the customer universe across transitions. Periods are project-relative, not real-world calendar dates. A lapsed customer is not the same as a technical exit from the tracked population.</p>
+      </section>
+
+      <section class="panel po-section po-story" aria-labelledby="po-story-title">
+        <p class="po-eyebrow">The end-to-end story</p><h2 id="po-story-title">From behavior to a governed business decision</h2>
+        <ol class="po-story-list">${story.map(([title, copy], i) => `<li><span class="po-step" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span><div><h3>${title}</h3><p>${copy}</p></div></li>`).join("")}</ol>
+        <p class="po-story-boundary">This is one decision workflow assembled from multiple isolated evidence domains—not one cross-source customer dataset.</p>
+      </section>
+
+      <section class="po-section" aria-labelledby="po-findings-title">
+        <p class="po-eyebrow">Key findings</p><h2 id="po-findings-title">What the evidence makes clear</h2>
+        <div class="grid grid-2 po-grid po-two po-findings">${cards([
+          ["Customer value has different shapes", "The highest-value primary group is not the group with the highest average basket value. P01 leads on average monetary value and frequency; P02 leads on average order value and promotion dependency."],
+          ["A positive experiment does not prove superior targeting", "The simple pretreatment-rule baseline has higher Qini than the T-learner for both email treatments. Treatment effects and targeting discrimination need separate interpretation. This comparison is specific to the exported evaluation."],
+          // attribution_dashboard_payload.json: campaign_index[campaign=18]
+          // .methods.{FIRST_TOUCH,LAST_TOUCH}.attribution_rank = {1,2}.
+          ["Attribution method changes campaign ranking", '<span class="po-rank"><span>First Touch <b>Rank 1</b></span><span aria-hidden="true">→</span><span>Last Touch <b>Rank 2</b></span></span>Campaign 18 ranks first under First Touch and second under Last Touch in the dunnhumby attribution export. This is a change in allocated credit, not evidence that the campaign caused additional sales.'],
+          ["Retail opportunity remains a testable hypothesis", "Behavioral value alone does not establish incremental treatment impact. The governed recommendations retain that distinction."]
+        ])}</div>
+      </section>
+
+      <section class="po-section" aria-labelledby="po-measure-title">
+        <p class="po-eyebrow">Incrementality vs attribution</p><h2 id="po-measure-title">Did the treatment change outcomes—or how should observed value be allocated?</h2>
+        <div class="grid grid-2 po-grid po-two po-comparison">
+          <article class="panel po-card"><p class="po-eyebrow">Hillstrom · Incrementality</p><h3>Randomized causal evidence</h3><p>Hillstrom compares email treatments with a No E-Mail control.</p><div class="po-effect"><span>Womens E-Mail conversion effect</span><strong>${pp(incrementality.womens_conversion_effect)} <small>percentage points</small></strong><span>95% CI ${pp(incrementality.womens_conversion_ci_lower)} to ${pp(incrementality.womens_conversion_ci_upper)} percentage points</span></div><p class="po-note">This is a treatment-level intention-to-treat result within Hillstrom. It is not a causal estimate for another dataset or a selected retail audience.</p></article>
+          <article class="panel po-card"><p class="po-eyebrow">dunnhumby · Attribution</p><h3>Descriptive credit allocation</h3><p>The Attribution page allocates observed dunnhumby basket value across eligible household campaign assignments using First Touch, Last Touch, Linear, Position Based, and Time Decay methods.</p><p class="po-note">These methods describe how credit is assigned. Campaign assignment is not an observed impression or click, and campaign start day is an ordering proxy rather than an observed exposure timestamp.</p></article>
+        </div>
+      </section>
+
+      <section class="po-section" aria-labelledby="po-decisions-title">
+        <p class="po-eyebrow">Decision framework</p><h2 id="po-decisions-title">Choose the next step the evidence supports</h2>
+        <p class="po-intro">These are governed recommendations and evidence states. They do not record campaigns being executed or business outcomes being realized.</p>
+        <div class="grid grid-4 po-grid po-actions">${cards([
+          ["SCALE", "Consider scaling where the recorded randomized effect and targeting evidence agree, while retaining an experimental holdout for continued measurement."],
+          ["MAINTAIN_HOLDOUT", "Keep randomized measurement in place when treatment-effect and targeting evidence do not agree strongly enough to justify a stronger action."],
+          ["RETEST", "Use the observed retail opportunity to form a testable activation hypothesis. Establish randomized evidence before claiming incremental impact."],
+          ["INVESTIGATE", "Examine measurement questions or insufficient activation evidence, including audiences below the governed size threshold. Descriptive activity alone is not a treatment-effect claim."]
+        ])}</div>
+      </section>
+
+      <section class="po-section" aria-labelledby="po-built-title">
+        <p class="po-eyebrow">What I built</p><h2 id="po-built-title">An interactive application around exported analytical evidence</h2>
+        <div class="grid grid-2 po-grid po-two">${cards([
+          ["Current portfolio application implementation", "The Studio is a static HTML, CSS, and JavaScript application served within a Next.js portfolio. Hash-based navigation connects the analytical views, JSON payloads supply the exported evidence, and Plotly renders interactive charts.<br><br>The interface includes audience filters, activation-detail views, attribution-method comparisons, and migration Sankey and matrix views. The browser presents the exported results; it does not retrain the analytical models."],
+          ["Analytical capabilities demonstrated by the exported evidence", "KMeans audience profiles, randomized intention-to-treat estimates, targeting-model comparisons, descriptive attribution, governed recommendations, and customer-state transitions.<br><br>The upstream model-development code and complete analytical pipeline are outside this portfolio export."]
+        ])}</div>
+      </section>
+
+      <section class="po-section" aria-labelledby="po-skills-title">
+        <p class="po-eyebrow">Skills demonstrated</p><h2 id="po-skills-title">Skills made visible through the work</h2>
+        <div class="grid grid-3 po-grid po-skills">${cards([
+          ["Audience analysis", "Interpret differences in retail behavior and distinguish exclusive segments from overlapping activation audiences."],
+          ["Experiment interpretation", "Read treatment effects with confidence intervals and separate causal evidence from targeting-model evaluation."],
+          ["Measurement judgment", "Distinguish descriptive attribution, event-volume funnels, transformed indices, and randomized incrementality."],
+          ["Interactive analytics engineering", "Build connected views with hash routing, JSON evidence, filters, method comparisons, and Plotly visualizations."],
+          ["Decision communication", "Turn analytical findings and limitations into clear recommendations with explicit guardrails."]
+        ])}</div>
+      </section>
+
+      <section class="po-section" aria-labelledby="po-governance-title">
+        <p class="po-eyebrow">Methodology & governance</p><h2 id="po-governance-title">Boundaries are part of the analysis</h2>
+        <div class="grid grid-2 po-grid po-two">${cards([
+          ["Source boundaries", "The four source domains remain analytically isolated. There are no cross-source identity joins. dunnhumby attribution uses same-source household identifiers only."],
+          ["Measurement semantics", "MCI is a transformed index. It is not currency, spend, CPA, or ROAS. Retailrocket’s view → addtocart → transaction funnel contains event-volume counts, not matched sequential customer conversion probabilities. “Attributed Items” uses normalized transaction-line counts; raw quantity is not presented as conventional units per transaction."],
+          ["Causal interpretation", "Attribution is descriptive, not causal. Campaign assignment is not an observed impression or click. Campaign start day is an ordering proxy. Hillstrom provides randomized, treatment-level causal evidence. Those conclusions do not transfer to other datasets or audience segments."],
+          ["Audience, migration & model semantics", "Secondary audience memberships overlap. They are not additional unique customers. Migration describes customer-state movement across project-relative periods. It is not a campaign-effect model. PCA is for visualization only. The browser does not retrain models or estimate new causal effects."]
+        ])}</div>
+      </section>
+
+      <section class="po-section po-explore" aria-labelledby="po-explore-title">
+        <p class="po-eyebrow">Explore the Studio</p><h2 id="po-explore-title">Explore the evidence behind the story</h2>
+        <p class="po-intro">Open a focused view to inspect the profiles, comparisons, and safeguards that support this project.</p>
+        <div class="grid grid-3 po-grid po-destinations">${destinations.map(([route, title, copy]) => `
+          <a class="panel po-card po-destination" href="${route === "migration" ? "./index.html#/migration" : `#/${route}`}"><h3>${title}<span aria-hidden="true">↗</span></h3><p>${copy}</p></a>
+        `).join("")}</div>
+      </section>
+    </article>
+  `;
 }
 
 function overviewPage() {
@@ -2714,6 +2893,7 @@ function attributionPage() {
 }
 
 async function drawAttribution() {
+  const attributionPageRoot = document.getElementById("page-root").firstElementChild;
   const response = await fetch(
     "data/attribution_dashboard_payload.json",
     {
@@ -2728,6 +2908,12 @@ async function drawAttribution() {
   }
 
   const payload = await response.json();
+
+  // A fetch may finish after navigation (including leaving and returning).
+  if (window.location.hash !== "#/attribution"
+      || document.getElementById("page-root").firstElementChild !== attributionPageRoot) {
+    return;
+  }
 
   if (
     payload.status !== "PASS"
@@ -3982,6 +4168,7 @@ function methodologyPage() {
 }
 
 function renderPage() {
+  const isProjectOverview = window.location.hash === "#/project-overview";
   /* P25_MIGRATION_RENDERPAGE_GUARD_V2 */
   if (window.location.hash === "#/migration") {
     return;
@@ -4003,6 +4190,10 @@ function renderPage() {
   let draw = null;
 
   switch (route) {
+    case "project-overview":
+      html = projectOverviewPage();
+      break;
+
     case "overview":
       html =
         overviewPage();
@@ -4083,9 +4274,21 @@ function renderPage() {
     </div>
   `;
 
+  if (isProjectOverview) {
+    window.scrollTo(0, 0);
+    document.getElementById("po-title").focus({ preventScroll: true });
+  }
+
   if (draw) {
+    const renderedPage = root.firstElementChild;
     window.requestAnimationFrame(
-      draw
+      () => {
+        if (root.firstElementChild === renderedPage
+            && window.location.hash !== "#/migration"
+            && currentRoute() === route) {
+          draw();
+        }
+      }
     );
   }
 }
