@@ -1,0 +1,24 @@
+{
+  "project": "Project 6",
+  "step": "16",
+  "substep": "16.3.B",
+  "status": "INTEGRATED_UNCOMMITTED",
+  "architecture": "NEXTJS_PAGES_ROUTER_ROOT",
+  "portfolio_project": {
+    "title": "Traffic Flow Deterioration Early-Warning System",
+    "tag": "Computer Vision & Traffic Analytics",
+    "featured": true,
+    "video": "/traffic-flow-early-warning/assets/video/project6_linkedin_web.mp4",
+    "detail_url": "/traffic-flow-early-warning/"
+  },
+  "modified_files": [
+    "components/Projects.js",
+    "components/Projects.module.css"
+  ],
+  "public_root": "public/traffic-flow-early-warning",
+  "publication_status": "PUBLICATION_APPROVED",
+  "analytics_rerun": false,
+  "video_rerender": false,
+  "committed": false,
+  "pushed": false
+}

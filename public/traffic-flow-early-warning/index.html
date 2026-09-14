@@ -1,0 +1,411 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    Traffic Flow Deterioration Early-Warning System
+  </title>
+
+  <meta
+    name="description"
+    content="Computer-vision traffic analytics portfolio project: traffic pressure warning at 24:00 with independent congestion validation."
+  >
+
+  <link
+    rel="stylesheet"
+    href="assets/css/styles.css"
+  >
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="page nav">
+
+    <div class="brand">
+      Project 6
+    </div>
+
+    <nav class="nav-links">
+      <a href="#result">Result</a>
+      <a href="#metrics">Metrics</a>
+      <a href="#approach">Approach</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#stack">Stack</a>
+    </nav>
+
+  </div>
+</header>
+
+<main>
+
+  <section class="page hero">
+
+    <div class="eyebrow">
+      Computer Vision · Traffic Analytics · Early Warning
+    </div>
+
+    <h1>
+      Traffic Flow Deterioration Early-Warning System
+    </h1>
+
+    <p class="hero-copy">
+      Camera analytics identified a sustained traffic-pressure
+      warning at <strong>24:00</strong> while an independent
+      congestion-validation layer correctly avoided escalating
+      the episode into a confirmed queue event.
+    </p>
+
+    <div class="hero-actions">
+
+      <a
+        class="button button-primary"
+        href="#result"
+      >
+        View result
+      </a>
+
+      <a
+        class="button button-secondary"
+        href="https://github.com/keerthisagarchegondi/linkedin-visual-labs"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        View GitHub
+      </a>
+
+    </div>
+
+    <div class="hero-media">
+
+      <video
+        controls
+        muted
+        playsinline
+        preload="metadata"
+        poster="assets/images/project6_thumbnail.png"
+      >
+        <source
+          src="assets/video/project6_linkedin_web.mp4"
+          type="video/mp4"
+        >
+
+        Your browser does not support HTML5 video.
+      </video>
+
+    </div>
+
+  </section>
+
+  <section
+    id="result"
+    class="page section"
+  >
+
+    <div class="result-panel">
+
+      <div class="eyebrow">
+        Final analytical result
+      </div>
+
+      <h3>
+        Traffic pressure warning at 24:00;
+        independent congestion validation did not confirm
+        a sustained queue.
+      </h3>
+
+      <p>
+        The warning layer responded to deteriorating traffic-flow
+        conditions, but the separate queue-validation rule did not
+        qualify a visible sustained congestion event. The system
+        therefore recommends <strong>escalate for review</strong>
+        rather than falsely claiming confirmed congestion.
+      </p>
+
+    </div>
+
+  </section>
+
+  <section
+    id="metrics"
+    class="page section"
+  >
+
+    <div class="section-heading">
+
+      <h2>
+        One decision window.
+        Five interpretable signals.
+      </h2>
+
+      <p>
+        All recruiter-facing KPIs below use the same
+        <strong>(23:00, 24:00]</strong> analytical window.
+        This avoids mixing historical comparisons with the actual
+        warning-onset snapshot.
+      </p>
+
+    </div>
+
+    <div class="kpi-grid">
+
+      <article class="kpi">
+        <div class="kpi-label">Traffic state</div>
+        <div class="kpi-value warning">WARNING</div>
+        <div class="kpi-sub">Warning onset: 24:00</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-label">Zone occupancy</div>
+        <div class="kpi-value">3.70</div>
+        <div class="kpi-sub">Last-60s mean observed occupancy</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-label">Entry–exit balance</div>
+        <div class="kpi-value gold">+5</div>
+        <div class="kpi-sub">8 entries / 3 exits</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-label">Throughput</div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-sub">Eligible exits / 60 sec</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-label">Relative movement</div>
+        <div class="kpi-value">0.0113054</div>
+        <div class="kpi-sub">Image diagonals / sec</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-label">Queue validation</div>
+        <div class="kpi-value good">NOT CONFIRMED</div>
+        <div class="kpi-sub">Technical result: NO_VISIBLE_QUEUE_EVENT</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-label">Lead time</div>
+        <div class="kpi-value">N/A</div>
+        <div class="kpi-sub">Not reportable without queue onset</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-label">Action</div>
+        <div class="kpi-value">Review</div>
+        <div class="kpi-sub">Alternative: Monitor</div>
+      </article>
+
+    </div>
+
+  </section>
+
+  <section
+    id="approach"
+    class="page section"
+  >
+
+    <div class="section-heading">
+
+      <h2>
+        From pixels to a defensible operational decision.
+      </h2>
+
+      <p>
+        The project separates traffic-pressure detection from
+        congestion confirmation, so an elevated warning state does
+        not automatically become a stronger claim than the evidence
+        supports.
+      </p>
+
+    </div>
+
+    <div class="story-grid">
+
+      <article class="story-card">
+        <div class="story-index">01</div>
+        <h3>Detect & track</h3>
+        <p>
+          YOLOX-Nano detections feed anonymous multi-object
+          trajectories across a fixed traffic-camera scene.
+        </p>
+      </article>
+
+      <article class="story-card">
+        <div class="story-index">02</div>
+        <h3>Measure flow</h3>
+        <p>
+          Zone occupancy, directional entry/exit events,
+          throughput and relative movement form an interpretable
+          flow-state representation.
+        </p>
+      </article>
+
+      <article class="story-card">
+        <div class="story-index">03</div>
+        <h3>Warn carefully</h3>
+        <p>
+          A deterministic state machine identifies sustained traffic
+          pressure while independent queue validation prevents
+          unsupported congestion claims.
+        </p>
+      </article>
+
+    </div>
+
+  </section>
+
+  <section
+    id="evidence"
+    class="page section"
+  >
+
+    <div class="section-heading">
+
+      <h2>
+        Visual evidence,
+        not just a score.
+      </h2>
+
+      <p>
+        The final presentation preserves original road imagery while
+        layering causal trajectories, density signals, directional
+        entry/exit emphasis and the evolving warning state.
+      </p>
+
+    </div>
+
+    <div class="media-grid">
+
+      <article class="media-card">
+        <img
+          src="assets/images/trajectory_map.png"
+          alt="Traffic trajectory visualization"
+          loading="lazy"
+        >
+
+        <div class="media-caption">
+          <strong>Trajectory map</strong>
+          <span>
+            Vehicle movement evidence within the analysis geometry.
+          </span>
+        </div>
+      </article>
+
+      <article class="media-card">
+        <img
+          src="assets/images/video_keyframe_contact_sheet.png"
+          alt="Video keyframe contact sheet"
+          loading="lazy"
+        >
+
+        <div class="media-caption">
+          <strong>45-second presentation</strong>
+          <span>
+            Canonical keyframes from the final recruiter-facing video.
+          </span>
+        </div>
+      </article>
+
+      <article class="media-card">
+        <img
+          src="assets/images/report_contact_sheet.png"
+          alt="Five-tab project report"
+          loading="lazy"
+        >
+
+        <div class="media-caption">
+          <strong>Five-tab analytical report</strong>
+          <span>
+            Dashboard, Video, Method, Results and About surfaces.
+          </span>
+        </div>
+      </article>
+
+      <article class="media-card">
+        <img
+          src="assets/images/project6_thumbnail.png"
+          alt="Traffic Flow Deterioration Early-Warning System"
+          loading="lazy"
+        >
+
+        <div class="media-caption">
+          <strong>Portfolio cover</strong>
+          <span>
+            Final visual identity for the project.
+          </span>
+        </div>
+      </article>
+
+    </div>
+
+  </section>
+
+  <section
+    id="stack"
+    class="page section"
+  >
+
+    <div class="section-heading">
+
+      <h2>
+        Technical stack
+      </h2>
+
+      <p>
+        The system combines computer vision, anonymous tracking,
+        traffic-flow analytics, deterministic state logic and
+        independent validation into one reproducible analytical
+        pipeline.
+      </p>
+
+    </div>
+
+    <div class="tech-list">
+      <span class="tech">Python</span>
+      <span class="tech">YOLOX-Nano</span>
+      <span class="tech">ONNX Runtime</span>
+      <span class="tech">OpenCV</span>
+      <span class="tech">Multi-object tracking</span>
+      <span class="tech">Traffic analytics</span>
+      <span class="tech">State machines</span>
+      <span class="tech">Validation contracts</span>
+      <span class="tech">FFmpeg</span>
+      <span class="tech">HTML / CSS / JavaScript</span>
+    </div>
+
+  </section>
+
+</main>
+
+<footer class="footer">
+
+  <div class="page">
+
+    <strong>
+      Traffic Flow Deterioration Early-Warning System
+    </strong>
+
+    <br>
+
+    Recorded historical traffic-analysis portfolio prototype.
+    Not live monitoring or production deployment.
+
+    <br><br>
+
+    © <span data-year></span>
+
+  </div>
+
+</footer>
+
+<script src="assets/js/app.js"></script>
+
+</body>
+</html>

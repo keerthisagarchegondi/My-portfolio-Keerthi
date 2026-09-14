@@ -1,0 +1,21 @@
+﻿{
+  "project": "Traffic Flow Deterioration Early-Warning System",
+  "portfolio_label": "Computer Vision · Traffic Analytics · Early Warning",
+  "headline": "Traffic pressure warning at 24:00; independent congestion validation did not confirm a sustained queue.",
+  "warning_time": "24:00",
+  "state": "WARNING",
+  "window": "(23:00,24:00]",
+  "zone_occupancy": 3.70,
+  "entry_exit_balance": 5,
+  "entries": 8,
+  "exits": 3,
+  "throughput": 3,
+  "relative_movement": 0.0113054,
+  "congestion": "NOT CONFIRMED",
+  "lead_time": "Not reportable",
+  "primary_action": "Escalate for review",
+  "alternative_action": "Monitor",
+  "publication_status": "PUBLICATION_APPROVED",
+  "github_url": "https://github.com/keerthisagarchegondi/linkedin-visual-labs",
+  "scope": "Recorded historical traffic-analysis portfolio prototype; not live monitoring or production deployment."
+}

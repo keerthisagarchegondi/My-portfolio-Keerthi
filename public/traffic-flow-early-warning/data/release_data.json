@@ -1,0 +1,324 @@
+{
+  "schema_version": "1.0",
+  "analytical_status": "VERIFIED",
+  "repository_gates": "PASS",
+  "project": "Project 6 \u2014 Traffic Operations Early-Warning System",
+  "result": {
+    "warning_timestamp": 1440.0,
+    "visible_queue_timestamp": null,
+    "lead_time_seconds": null,
+    "result_classification": "NO_VISIBLE_QUEUE_EVENT",
+    "baseline_false_warning": {
+      "baseline_false_warning_count": 0,
+      "warning_seconds": 0,
+      "evaluable_seconds": 60,
+      "proportion": 0.0,
+      "caveat": "In-sample baseline diagnostic; not held-out false-alarm accuracy."
+    },
+    "evaluation_interval": [
+      1380,
+      1800
+    ],
+    "transitions": [
+      {
+        "timestamp": 1380.0,
+        "state": "NORMAL",
+        "drivers": ""
+      },
+      {
+        "timestamp": 1383.0,
+        "state": "WATCH",
+        "drivers": "INFLOW_OUTFLOW_IMBALANCE"
+      },
+      {
+        "timestamp": 1440.0,
+        "state": "WARNING",
+        "drivers": "DENSITY_LEVEL|INFLOW_OUTFLOW_IMBALANCE|DENSITY_TREND"
+      },
+      {
+        "timestamp": 1737.0,
+        "state": "NORMAL",
+        "drivers": ""
+      },
+      {
+        "timestamp": 1754.0,
+        "state": "WATCH",
+        "drivers": "INFLOW_OUTFLOW_IMBALANCE"
+      },
+      {
+        "timestamp": 1758.0,
+        "state": "NORMAL",
+        "drivers": ""
+      }
+    ],
+    "maximum_queue_count": 0.0,
+    "maximum_queue_rule_persistence_seconds": 0.0,
+    "dwell_baseline_available": false,
+    "interpretation": "Configured outcome over post-baseline evaluation only; no human-ground-truth queue or detector/tracking accuracy claim.",
+    "primary_driver": "DENSITY_LEVEL",
+    "supporting_drivers": [
+      "INFLOW_OUTFLOW_IMBALANCE",
+      "DENSITY_TREND"
+    ]
+  },
+  "baseline": {
+    "interval": [
+      1260,
+      1380
+    ],
+    "comparison_timestamps": [
+      1320,
+      1380
+    ],
+    "configuration": {
+      "window_seconds": 60,
+      "formal_window_seconds": 300,
+      "cadence_seconds": 1,
+      "minimum_dwell_samples": 3,
+      "minimum_movement_samples": 10,
+      "baseline_start": 1260,
+      "baseline_end": 1380,
+      "trend_seconds": 30
+    },
+    "threshold_classification": "CONFIGURED_ASSUMPTION",
+    "statistics": {
+      "density_window_mean": {
+        "median": 0.7583333333333333,
+        "p10": 0.65,
+        "p90": 0.935,
+        "sample_size": 60,
+        "mad": 0.09166666666666667
+      },
+      "median_completed_dwell_seconds": {
+        "median": null,
+        "p10": null,
+        "p90": null,
+        "sample_size": 0,
+        "mad": null
+      },
+      "throughput": {
+        "median": 2.0,
+        "p10": 1.0,
+        "p90": 3.0,
+        "sample_size": 60,
+        "mad": 1.0
+      },
+      "movement_index": {
+        "median": 0.007695508997332229,
+        "p10": 0.005886999000533527,
+        "p90": 0.009528714177638474,
+        "sample_size": 60,
+        "mad": 0.0012203665920411865
+      },
+      "queue_count": {
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "sample_size": 60,
+        "mad": 0.0
+      },
+      "inflow_outflow_imbalance": {
+        "median": -1.0,
+        "p10": -1.0,
+        "p90": 1.0,
+        "sample_size": 60,
+        "mad": 1.0
+      }
+    },
+    "status": "PASS_LIMITED_SCREENING_BASELINE",
+    "selection_reason": "Screened baseline retained if full windows and bounded density spread; no lead-time criterion.",
+    "limitations": [
+      "120s baseline cannot provide full300s within-baseline windows.",
+      "Overlapping windows are not independent samples.",
+      "Sparse dwell remains unavailable; no baseline percentage against zero."
+    ]
+  },
+  "screened_comparison_interval": [
+    1440,
+    1650
+  ],
+  "metric_changes": {
+    "density_window_mean": {
+      "baseline_median": 0.7583333333333333,
+      "screened_interval_median": 4.45,
+      "sample_size": 210,
+      "relative_change": 4.868131868131869
+    },
+    "median_completed_dwell_seconds": {
+      "baseline_median": null,
+      "screened_interval_median": 49.14999999999998,
+      "sample_size": 108,
+      "relative_change": null
+    },
+    "throughput": {
+      "baseline_median": 2.0,
+      "screened_interval_median": 3.5,
+      "sample_size": 210,
+      "relative_change": 0.75
+    },
+    "movement_index": {
+      "baseline_median": 0.007695508997332229,
+      "screened_interval_median": 0.008994308146367019,
+      "sample_size": 210,
+      "relative_change": 0.16877365090275886
+    },
+    "queue_count": {
+      "baseline_median": 0.0,
+      "screened_interval_median": 0.0,
+      "sample_size": 210,
+      "relative_change": null
+    },
+    "inflow_outflow_imbalance": {
+      "baseline_median": -1.0,
+      "screened_interval_median": 2.0,
+      "sample_size": 210,
+      "relative_change": 3.0
+    }
+  },
+  "eligibility": {
+    "candidate_tracks": 572,
+    "eligible_confirmed_tracks": 178,
+    "input_observations": 16525,
+    "eligible_observations": 15727,
+    "excluded_observations": 798,
+    "unconfirmed_or_preconfirmation_observations": 798,
+    "invalid_jump_tracks": 0,
+    "outside_roi_observations": 0,
+    "eligible_crossings": 212,
+    "eligible_entries": 131,
+    "eligible_exits": 81,
+    "completed_dwell_samples": 65,
+    "incomplete_journeys_excluded_from_dwell": 507,
+    "confirmation_policy": "Known confirmation only; historical crossing available no earlier than confirmation.",
+    "cohort_limit": "Audited journey eligibility is retrospective quality screening; not independent online performance validation."
+  },
+  "unmatched_warning": {
+    "warning_episodes_without_qualifying_queue": 1,
+    "warning_state_seconds": 297,
+    "caveat": "No target outcome qualified; an unmatched warning is not demonstrated early warning. Ground-truth false-positive accuracy remains unknown."
+  },
+  "recommendation": {
+    "observed_pattern": "Multiple configured deterioration signals persisted.",
+    "supporting_metric_ids": [
+      "DENSITY_LEVEL",
+      "INFLOW_OUTFLOW_IMBALANCE",
+      "DENSITY_TREND"
+    ],
+    "likely_operational_issue": "Possible demand/discharge imbalance; cause not established.",
+    "recommended_action": "ESCALATE_FOR_REVIEW",
+    "alternative_action": "MONITOR",
+    "recommendation_classification": "ILLUSTRATIVE_RECOMMENDATION",
+    "wording": "Consider escalating the recorded deterioration for review.",
+    "caveat": "Prototype analytical review only. No road-control, staffing, overflow capacity or causal explanation has been validated.",
+    "evidence_timestamp": 1440.0,
+    "source_evidence": "data/warning_summary.json",
+    "enabled_actions": [
+      "ESCALATE_FOR_REVIEW",
+      "MONITOR"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "P6-B3-01",
+      "claim_text": "The configured warning first qualified at 1440.0 source seconds.",
+      "classification": "DERIVED",
+      "evidence_path": "outputs/p05_traffic_operations_early_warning/data/warning_summary.json",
+      "evidence_sha256": "8d6eddba9b052f89ff9c6cec7946692b8916b51a636547feb19533d45131ad06",
+      "calculation": "First full warning persistence completion after baseline",
+      "unit": "source seconds",
+      "caveat": "Configured, model-derived analysis; no independent accuracy or physical queue-absence claim. Aggregate content approval does not authorize source imagery.",
+      "approved_for_publication": true,
+      "reviewer_status": "APPROVED",
+      "approval_scope": "AGGREGATE_ANALYTICAL_CONTENT_ONLY",
+      "last_validated_step": 11
+    },
+    {
+      "claim_id": "P6-B3-02",
+      "claim_text": "Result: NO_VISIBLE_QUEUE_EVENT; qualifying queue onset and lead time are unavailable.",
+      "classification": "DERIVED",
+      "evidence_path": "outputs/p05_traffic_operations_early_warning/data/warning_summary.json",
+      "evidence_sha256": "8d6eddba9b052f89ff9c6cec7946692b8916b51a636547feb19533d45131ad06",
+      "calculation": "Independent queue outcome and signed onset arithmetic",
+      "unit": "classification; seconds or null",
+      "caveat": "Configured, model-derived analysis; no independent accuracy or physical queue-absence claim. Aggregate content approval does not authorize source imagery.",
+      "approved_for_publication": true,
+      "reviewer_status": "APPROVED",
+      "approval_scope": "AGGREGATE_ANALYTICAL_CONTENT_ONLY",
+      "last_validated_step": 11
+    },
+    {
+      "claim_id": "P6-B3-03",
+      "claim_text": "Baseline warning exposure: 0 of 60 evaluable seconds.",
+      "classification": "DERIVED",
+      "evidence_path": "outputs/p05_traffic_operations_early_warning/data/warning_summary.json",
+      "evidence_sha256": "8d6eddba9b052f89ff9c6cec7946692b8916b51a636547feb19533d45131ad06",
+      "calculation": "In-sample exposure with frozen rule",
+      "unit": "seconds",
+      "caveat": "Configured, model-derived analysis; no independent accuracy or physical queue-absence claim. Aggregate content approval does not authorize source imagery.",
+      "approved_for_publication": true,
+      "reviewer_status": "APPROVED",
+      "approval_scope": "AGGREGATE_ANALYTICAL_CONTENT_ONLY",
+      "last_validated_step": 11
+    },
+    {
+      "claim_id": "P6-B3-04",
+      "claim_text": "Completed dwell uses 65 eligible journeys; incomplete journeys are excluded.",
+      "classification": "DERIVED",
+      "evidence_path": "outputs/p05_traffic_operations_early_warning/data/metric_quality_summary.json",
+      "evidence_sha256": "8789e9b1a6746451de79aeacde17b58569d4edfc6d5453309a4d6389daba6341",
+      "calculation": "Reconciled complete gap-free crossing pairs",
+      "unit": "journeys",
+      "caveat": "Configured, model-derived analysis; no independent accuracy or physical queue-absence claim. Aggregate content approval does not authorize source imagery.",
+      "approved_for_publication": true,
+      "reviewer_status": "APPROVED",
+      "approval_scope": "AGGREGATE_ANALYTICAL_CONTENT_ONLY",
+      "last_validated_step": 11
+    },
+    {
+      "claim_id": "P6-B3-05",
+      "claim_text": "Consider escalating the recorded deterioration for review.",
+      "classification": "ILLUSTRATIVE_RECOMMENDATION",
+      "evidence_path": "outputs/p05_traffic_operations_early_warning/data/recommendation.json",
+      "evidence_sha256": "d1fa6da265eb61cd90ae087207f7470fd656bf8c7becf5b24503127a016439dc",
+      "calculation": "Enabled prototype review action linked to actual warning drivers",
+      "unit": "conditional action",
+      "caveat": "Configured, model-derived analysis; no independent accuracy or physical queue-absence claim. Aggregate content approval does not authorize source imagery.",
+      "approved_for_publication": true,
+      "reviewer_status": "APPROVED",
+      "approval_scope": "AGGREGATE_ANALYTICAL_CONTENT_ONLY",
+      "last_validated_step": 11
+    },
+    {
+      "claim_id": "P6-B3-06",
+      "claim_text": "Operational comparisons use an explicit 60-second fast-track window; the formal window remains 300 seconds.",
+      "classification": "CONFIGURED_ASSUMPTION",
+      "evidence_path": "outputs/p05_traffic_operations_early_warning/data/baseline_summary.json",
+      "evidence_sha256": "d11d13d94dbb79deb5c90708e476375d6f687f89365e20e9faae8b244553d5e4",
+      "calculation": "Baseline interval duration and declared window policy",
+      "unit": "seconds",
+      "caveat": "Configured, model-derived analysis; no independent accuracy or physical queue-absence claim. Aggregate content approval does not authorize source imagery.",
+      "approved_for_publication": true,
+      "reviewer_status": "APPROVED",
+      "approval_scope": "AGGREGATE_ANALYTICAL_CONTENT_ONLY",
+      "last_validated_step": 11
+    }
+  ],
+  "limitations": [
+    "Only 1380-1800s is the post-baseline evaluation interval.",
+    "The 120s baseline is limited; overlapping windows are not independent.",
+    "Baseline dwell unavailable: fewer than 3 complete samples per operational window.",
+    "Fragmentation and geometric overlap can contaminate counts; no accuracy claim.",
+    "Zero qualifying queue evidence does not prove absence of a physically visible queue.",
+    "Signal-cycle duration unmeasured; 120s persistence is a configured transient filter.",
+    "No causal impact, production deployment or live-monitoring claim."
+  ],
+  "publication": {
+    "aggregate_analytical_content_approved": true,
+    "raw_footage_approved": false,
+    "source_excerpts_approved": false,
+    "transformed_source_imagery_approved": false,
+    "final_artifact_release_approved": false
+  },
+  "evidence_index": "data/evidence_index.json",
+  "only_analytical_source_for_final_rendering": true
+}

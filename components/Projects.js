@@ -12,6 +12,21 @@ import styles from './Projects.module.css';
 
 /* ─── Project data ─── */
 const PROJECTS = [
+
+  {
+    emoji: '🚦',
+    tag: 'Computer Vision & Traffic Analytics',
+    title: 'Traffic Flow Deterioration Early-Warning System',
+    desc: 'Built a fixed-camera traffic analytics pipeline that detects and tracks vehicles, derives interpretable flow metrics, raises a traffic-pressure warning at 24:00, and independently validates whether the evidence supports a sustained congestion claim.',
+    impact: ['WARNING at 24:00', '8 entries / 3 exits', 'Queue not confirmed'],
+    stack: ['Python', 'YOLOX-Nano', 'ONNX Runtime', 'OpenCV'],
+    color: '#835cf6',
+    featured: true,
+    video: '/traffic-flow-early-warning/assets/video/project6_linkedin_web.mp4',
+    detailUrl: '/traffic-flow-early-warning/',
+  },
+
+
   {
     emoji: '📈',
     tag: 'Forecasting & Decision Science',
@@ -268,7 +283,30 @@ function ProjectDisplay({ project }) {
           <FiArrowRight />
         </a>
       )}
-    </motion.div>
+
+      {project.detailUrl && (
+        <motion.div
+          className={styles.detailLinkRow}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.42, duration: 0.35 }}
+        >
+          <a
+            className={styles.detailLink}
+            href={project.detailUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View full case study
+            <FiArrowRight
+              size={14}
+              className={styles.detailLinkArrow}
+            />
+          </a>
+        </motion.div>
+      )}
+
+</motion.div>
   );
 }
 
