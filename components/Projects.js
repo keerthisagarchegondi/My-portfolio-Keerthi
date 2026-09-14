@@ -23,7 +23,7 @@ const PROJECTS = [
     color: '#835cf6',
     featured: true,
     video: '/traffic-flow-early-warning/assets/video/project6_linkedin_web.mp4',
-    detailUrl: '/traffic-flow-early-warning/',
+    detailUrl: '/traffic-flow-early-warning.html',
   },
 
 

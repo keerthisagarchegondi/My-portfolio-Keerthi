@@ -1,0 +1,2496 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1"
+>
+
+<title>
+Traffic Flow Deterioration Early-Warning System
+</title>
+
+<meta
+  name="description"
+  content="Recorded fixed-camera traffic-flow deterioration early-warning analysis."
+>
+
+<style>
+
+:root {
+  --bg: #f3f6fa;
+  --white: #ffffff;
+  --ink: #172a3d;
+  --muted: #526f8e;
+  --border: #cfdae6;
+  --blue: #2379ef;
+  --navy: #071725;
+  --cyan: #00b8d9;
+  --green: #11a65c;
+  --orange: #f59e0b;
+  --amber-bg: #fff2d2;
+  --max: 1600px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--bg);
+  font-family:
+    "Segoe UI Variable",
+    "Segoe UI",
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    Arial,
+    sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  line-height: 1.38;
+}
+
+button,
+video {
+  font: inherit;
+}
+
+img,
+video {
+  display: block;
+  width: 100%;
+}
+
+.shell {
+  width: min(100%, var(--max));
+  min-height: 100vh;
+  margin-inline: auto;
+  background: var(--bg);
+}
+
+
+/* ==============================================================
+   HEADER
+   ============================================================== */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-height: 96px;
+  padding: 22px 28px 10px;
+  background: var(--white);
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  flex: 0 0 66px;
+  width: 66px;
+  height: 66px;
+  border-radius: 13px;
+  color: #fff;
+  background: var(--navy);
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.title-wrap {
+  min-width: 0;
+}
+
+h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(27px, 2.35vw, 35px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0.018em;
+}
+
+.subtitle .sep {
+  padding-inline: 10px;
+}
+
+
+/* ==============================================================
+   TAB BAR
+   ============================================================== */
+
+.tabs {
+  display: flex;
+  justify-content: flex-end;
+  gap: 27px;
+  min-height: 49px;
+  padding: 0 46px;
+  border-bottom: 1px solid #edf1f5;
+  background: var(--white);
+}
+
+.tab {
+  position: relative;
+  padding: 11px 8px 13px;
+  border: 0;
+  color: #425f7d;
+  background: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.tab::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  content: "";
+  background: transparent;
+}
+
+.tab.active {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.tab.active::after {
+  background: var(--blue);
+}
+
+.tab:hover,
+.tab:focus-visible {
+  color: var(--blue);
+}
+
+
+/* ==============================================================
+   COMMON
+   ============================================================== */
+
+.workspace {
+  padding: 13px 29px 4px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+h2 {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-size: clamp(26px, 2.15vw, 32px);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: 0.012em;
+}
+
+h3,
+h4,
+p {
+  margin-top: 0;
+}
+
+h3 {
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+h4 {
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+p {
+  line-height: 1.5;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--white);
+}
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #dce5ed;
+}
+
+.frame img {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  object-fit: cover;
+}
+
+.frame-tag {
+  position: absolute;
+  z-index: 20;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #ffffff;
+  background: rgba(7, 23, 37, 0.92);
+  box-shadow: 0 5px 16px rgba(7, 23, 37, 0.18);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+
+
+/* ==============================================================
+   DASHBOARD
+   ============================================================== */
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.metric {
+  min-height: 87px;
+  padding: 11px 13px;
+}
+
+.metric-label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.metric-value {
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.08;
+}
+
+.metric-value.small {
+  font-size: 18px;
+}
+
+.metric-value.medium {
+  font-size: 21px;
+}
+
+.metric-note {
+  margin-top: 5px;
+  color: #71869c;
+  font-size: 12px;
+}
+
+.metric-context {
+  margin: 8px 0 11px;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.dashboard-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.92fr) minmax(340px, 1fr);
+  gap: 18px;
+}
+
+.dashboard-camera {
+  height: 425px;
+}
+
+.warning-card {
+  padding: 20px 22px;
+}
+
+.warning-card h3 {
+  margin-bottom: 18px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.drivers {
+  display: grid;
+  gap: 7px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.validation {
+  margin-top: 26px;
+}
+
+.validation h4 {
+  margin-bottom: 5px;
+  font-size: 22px;
+}
+
+.validation strong {
+  display: block;
+  font-size: 28px;
+}
+
+.validation p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.action {
+  display: flex;
+  flex-direction: column;
+  margin-top: 14px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--amber-bg);
+}
+
+.action strong {
+  font-size: 21px;
+  line-height: 1.3;
+}
+
+.action span {
+  color: #71849a;
+  font-size: 14px;
+}
+
+.diagnostics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) 1.02fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.spark-card,
+.timeline {
+  min-height: 128px;
+  padding: 9px 13px;
+}
+
+.spark-card h4,
+.timeline h4 {
+  margin-bottom: 2px;
+  font-size: 17px;
+}
+
+.spark {
+  width: 100%;
+  height: 79px;
+}
+
+.spark-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.timeline div {
+  margin-top: 5px;
+  font-size: 16px;
+}
+
+.timeline .strong {
+  font-weight: 800;
+}
+
+.historical {
+  margin-top: 13px;
+  padding: 10px 14px;
+  border: 1px solid #d5e0eb;
+  border-radius: 10px;
+  color: var(--muted);
+  background: #eef4fa;
+  font-size: 14px;
+}
+
+
+/* ==============================================================
+   VIDEO
+   ============================================================== */
+
+.video-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.25fr) minmax(310px, 0.85fr);
+  gap: 20px;
+}
+
+.video-box {
+  position: relative;
+  height: 595px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: #08131d;
+}
+
+.video-box video {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  object-fit: contain;
+  background: #000000;
+}
+
+.story {
+  padding: 22px 24px;
+}
+
+.story h3 {
+  margin-bottom: 21px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.chapters {
+  display: grid;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 23px;
+}
+
+.chapters li {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+}
+
+.chapters .selected {
+  font-weight: 800;
+}
+
+.story-meta {
+  margin-top: 62px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.video-copy {
+  margin-top: 24px;
+}
+
+.video-copy strong {
+  font-size: 24px;
+}
+
+.video-copy p {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+
+/* ==============================================================
+   METHOD
+   ============================================================== */
+
+.pipeline {
+  margin: 14px 0 22px;
+  padding: 28px 25px;
+  border-radius: 13px;
+  color: #fff;
+  background: var(--navy);
+  font-size: clamp(19px, 2vw, 27px);
+  font-weight: 800;
+}
+
+.method-images {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 18px;
+}
+
+.method-frame {
+  height: 370px;
+}
+
+.method-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 25px;
+}
+
+.info-card {
+  padding: 18px 20px;
+}
+
+.info-card h3 {
+  margin-bottom: 12px;
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.info-card p {
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+
+/* ==============================================================
+   RESULTS
+   ============================================================== */
+
+.results-title {
+  margin-bottom: 15px;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0.035em;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.15fr) minmax(340px, 0.95fr);
+  gap: 20px;
+}
+
+.results-frame {
+  height: 560px;
+}
+
+.results-card {
+  padding: 21px 24px;
+}
+
+.result + .result {
+  margin-top: 39px;
+}
+
+.result-label {
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.result-value {
+  margin-top: 6px;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.12;
+}
+
+.result-value.compact {
+  overflow-wrap: anywhere;
+  font-size: 20px;
+}
+
+.result-note {
+  margin-top: 45px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.results-copy {
+  margin-top: 17px;
+}
+
+.results-copy strong {
+  font-size: 24px;
+}
+
+.results-copy p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.results-copy .small {
+  font-size: 14px;
+}
+
+
+/* ==============================================================
+   ABOUT
+   ============================================================== */
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.65fr 0.95fr;
+  gap: 28px;
+}
+
+.about-copy {
+  display: grid;
+  gap: 25px;
+}
+
+.about-copy h3 {
+  margin-bottom: 4px;
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.about-copy p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.about-side {
+  display: grid;
+  gap: 20px;
+}
+
+.about-image {
+  height: 305px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.about-card {
+  padding: 18px 20px;
+}
+
+.about-card h3 {
+  margin: 0 0 4px;
+  font-size: 21px;
+}
+
+.about-card h3:not(:first-child) {
+  margin-top: 26px;
+}
+
+.about-card p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+
+/* ==============================================================
+   FOOTER
+   ============================================================== */
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 13px 29px 18px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+
+/* ==============================================================
+   RESPONSIVE
+   ============================================================== */
+
+@media (max-width: 1180px) {
+
+  .metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .diagnostics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-main,
+  .video-grid,
+  .results-grid,
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .method-images {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-camera,
+  .results-frame,
+  .method-frame {
+    height: auto;
+  }
+
+  .dashboard-camera img,
+  .results-frame img,
+  .method-frame img {
+    height: auto;
+  }
+
+}
+
+
+@media (max-width: 760px) {
+
+  .header {
+    align-items: flex-start;
+    padding-inline: 15px;
+  }
+
+  .badge {
+    flex-basis: 52px;
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
+  }
+
+  h1 {
+    font-size: 23px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .subtitle .sep {
+    display: none;
+  }
+
+  .tabs {
+    justify-content: flex-start;
+    gap: 5px;
+    overflow-x: auto;
+    padding-inline: 12px;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    font-size: 15px;
+  }
+
+  .workspace {
+    padding-inline: 14px;
+  }
+
+  .metrics,
+  .diagnostics,
+  .method-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .video-box {
+    height: auto;
+  }
+
+  .video-box video {
+    height: auto;
+  }
+
+}
+
+
+
+/* PROJECT6_EDITORIAL_TYPE_BEGIN */
+
+
+/* ---------------------------------------------------------------
+   MASTER FONT SYSTEM
+   --------------------------------------------------------------- */
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family:
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+}
+
+
+body {
+  color: #1d3348 !important;
+  font-size: 15.5px !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0 !important;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+
+/* ---------------------------------------------------------------
+   PROJECT HEADER
+   --------------------------------------------------------------- */
+
+.title-wrap h1 {
+  margin: 0 !important;
+
+  color: #172a3d !important;
+
+  font-size: 31px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.15 !important;
+  letter-spacing: -0.015em !important;
+}
+
+
+.subtitle {
+  margin-top: 6px !important;
+
+  color: #60788f !important;
+
+  font-size: 15px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+
+
+.badge {
+  font-size: 25px !important;
+  font-weight: 700 !important;
+
+  line-height: 1 !important;
+  letter-spacing: -0.01em !important;
+}
+
+
+/* ---------------------------------------------------------------
+   TAB NAVIGATION
+   --------------------------------------------------------------- */
+
+.tab {
+  color: #59728b !important;
+
+  font-size: 15px !important;
+  font-weight: 500 !important;
+
+  line-height: 1.25 !important;
+  letter-spacing: 0 !important;
+}
+
+
+.tab.active {
+  color: #2379ef !important;
+  font-weight: 700 !important;
+}
+
+
+/* ---------------------------------------------------------------
+   PAGE TITLES
+   --------------------------------------------------------------- */
+
+.page > h2,
+.results-title {
+  margin-bottom: 15px !important;
+
+  color: #172a3d !important;
+
+  font-size: 24px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.25 !important;
+  letter-spacing: -0.01em !important;
+}
+
+
+.results-title {
+  letter-spacing: 0.015em !important;
+}
+
+
+/* ---------------------------------------------------------------
+   COMMON HEADINGS + PARAGRAPHS
+   --------------------------------------------------------------- */
+
+h3 {
+  color: #20384e !important;
+
+  font-size: 18px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.3 !important;
+  letter-spacing: -0.005em !important;
+}
+
+
+h4 {
+  color: #29435b !important;
+
+  font-size: 15px !important;
+  font-weight: 600 !important;
+
+  line-height: 1.35 !important;
+  letter-spacing: 0 !important;
+}
+
+
+p {
+  color: #60788f !important;
+
+  font-size: 15.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.52 !important;
+  letter-spacing: 0 !important;
+}
+
+
+strong {
+  font-weight: 700 !important;
+}
+
+
+/* ---------------------------------------------------------------
+   KPI SYSTEM
+   --------------------------------------------------------------- */
+
+.metric-label {
+  color: #698197 !important;
+
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.2 !important;
+  letter-spacing: 0.035em !important;
+
+  text-transform: none !important;
+}
+
+
+.metric-value {
+  margin-top: 7px !important;
+
+  color: #182e43 !important;
+
+  font-size: 23px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.1 !important;
+  letter-spacing: -0.015em !important;
+}
+
+
+.metric-value.medium {
+  font-size: 18px !important;
+}
+
+
+.metric-value.small {
+  font-size: 16px !important;
+}
+
+
+.metric-note {
+  margin-top: 5px !important;
+
+  color: #8294a5 !important;
+
+  font-size: 11.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.3 !important;
+}
+
+
+.metric-context {
+  color: #637c94 !important;
+
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.45 !important;
+}
+
+
+/* ---------------------------------------------------------------
+   DASHBOARD DECISION PANEL
+   --------------------------------------------------------------- */
+
+.warning-card h3 {
+  margin-bottom: 16px !important;
+
+  font-size: 20px !important;
+  font-weight: 700 !important;
+}
+
+
+.drivers {
+  color: #304a63 !important;
+
+  font-size: 16px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.45 !important;
+}
+
+
+.validation h4 {
+  margin-bottom: 5px !important;
+
+  font-family:
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+
+  font-size: 14px !important;
+  font-weight: 600 !important;
+
+  line-height: 1.3 !important;
+}
+
+
+.validation strong {
+  color: #1c3348 !important;
+
+  font-size: 22px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.18 !important;
+}
+
+
+.validation p {
+  margin-top: 7px !important;
+
+  color: #698197 !important;
+
+  font-size: 14px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.48 !important;
+}
+
+
+.action strong {
+  color: #5d4908 !important;
+
+  font-size: 17px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.25 !important;
+}
+
+
+.action span {
+  margin-top: 2px !important;
+
+  color: #7d8792 !important;
+
+  font-size: 11.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.3 !important;
+}
+
+
+/* ---------------------------------------------------------------
+   MINI DIAGNOSTICS
+   --------------------------------------------------------------- */
+
+.spark-card h4,
+.timeline h4 {
+  margin-bottom: 3px !important;
+
+  color: #344e66 !important;
+
+  font-size: 13px !important;
+  font-weight: 600 !important;
+
+  line-height: 1.3 !important;
+}
+
+
+.spark-axis {
+  color: #8698aa !important;
+
+  font-size: 10px !important;
+  font-weight: 400 !important;
+}
+
+
+.timeline div {
+  color: #516b84 !important;
+
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.35 !important;
+}
+
+
+.timeline .strong {
+  color: #253e56 !important;
+  font-weight: 700 !important;
+}
+
+
+.historical {
+  color: #637d95 !important;
+
+  font-size: 12px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.45 !important;
+}
+
+
+/* ---------------------------------------------------------------
+   FRAME LABELS
+   --------------------------------------------------------------- */
+
+.frame-tag {
+  font-family:
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+
+  font-size: 13px !important;
+  font-weight: 600 !important;
+
+  line-height: 1 !important;
+  letter-spacing: 0.025em !important;
+}
+
+
+/* ---------------------------------------------------------------
+   VIDEO PAGE
+   --------------------------------------------------------------- */
+
+.story h3 {
+  margin-bottom: 19px !important;
+
+  font-size: 20px !important;
+  font-weight: 700 !important;
+}
+
+
+.chapters {
+  color: #344e66 !important;
+
+  font-size: 17px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.35 !important;
+}
+
+
+.chapters li span:first-child {
+  color: #8295a8 !important;
+
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+
+.chapters .selected {
+  color: #172e43 !important;
+  font-weight: 700 !important;
+}
+
+
+.story-meta {
+  color: #778da2 !important;
+
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.55 !important;
+}
+
+
+.video-copy strong {
+  display: block;
+
+  max-width: 900px;
+
+  color: #263f56 !important;
+
+  font-size: 18px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.4 !important;
+}
+
+
+.video-copy p {
+  max-width: 920px;
+
+  color: #657d94 !important;
+
+  font-size: 14.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.5 !important;
+}
+
+
+/* ---------------------------------------------------------------
+   METHOD PAGE
+   --------------------------------------------------------------- */
+
+.pipeline {
+  font-family:
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+
+  font-size: 19px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.4 !important;
+  letter-spacing: 0.005em !important;
+}
+
+
+.info-card h3 {
+  color: #2b455d !important;
+
+  font-family:
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif !important;
+
+  font-size: 14px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.3 !important;
+  letter-spacing: 0.025em !important;
+}
+
+
+.info-card p {
+  color: #667f96 !important;
+
+  font-size: 14.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.48 !important;
+}
+
+
+/* ---------------------------------------------------------------
+   RESULTS
+   --------------------------------------------------------------- */
+
+.result-label {
+  color: #71879a !important;
+
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.2 !important;
+  letter-spacing: 0.03em !important;
+
+  text-transform: none !important;
+}
+
+
+.result-value {
+  color: #172e43 !important;
+
+  font-size: 25px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.15 !important;
+  letter-spacing: -0.01em !important;
+}
+
+
+.result-value.compact {
+  font-size: 15px !important;
+
+  line-height: 1.28 !important;
+  letter-spacing: 0 !important;
+}
+
+
+.result-note {
+  color: #8093a4 !important;
+
+  font-size: 11.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.4 !important;
+}
+
+
+.results-copy {
+  max-width: 1080px;
+}
+
+
+.results-copy strong {
+  color: #263f56 !important;
+
+  font-size: 18px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.4 !important;
+}
+
+
+.results-copy p {
+  color: #647d94 !important;
+
+  font-size: 14.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.5 !important;
+}
+
+
+.results-copy .small {
+  color: #8192a3 !important;
+
+  font-size: 12px !important;
+
+  line-height: 1.45 !important;
+}
+
+
+/* ---------------------------------------------------------------
+   ABOUT
+   --------------------------------------------------------------- */
+
+.about-copy {
+  max-width: 860px;
+}
+
+
+.about-copy h3,
+.about-card h3 {
+  color: #284158 !important;
+
+  font-size: 16px !important;
+  font-weight: 700 !important;
+
+  line-height: 1.3 !important;
+}
+
+
+.about-copy p,
+.about-card p {
+  color: #627b92 !important;
+
+  font-size: 14.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.5 !important;
+}
+
+
+.about-copy article {
+  max-width: 820px;
+}
+
+
+/* ---------------------------------------------------------------
+   FOOTER
+   --------------------------------------------------------------- */
+
+.footer {
+  color: #7b8fa2 !important;
+
+  font-size: 11.5px !important;
+  font-weight: 400 !important;
+
+  line-height: 1.4 !important;
+  letter-spacing: 0.015em !important;
+}
+
+
+/* ---------------------------------------------------------------
+   RESPONSIVE TYPOGRAPHY
+   --------------------------------------------------------------- */
+
+@media (max-width: 760px) {
+
+  .title-wrap h1 {
+    font-size: 23px !important;
+  }
+
+  .subtitle {
+    font-size: 13px !important;
+  }
+
+  .tab {
+    font-size: 14px !important;
+  }
+
+  .page > h2,
+  .results-title {
+    font-size: 21px !important;
+  }
+
+  .metric-value {
+    font-size: 21px !important;
+  }
+
+  .warning-card h3,
+  .story h3 {
+    font-size: 18px !important;
+  }
+
+  .pipeline {
+    font-size: 16px !important;
+  }
+
+}
+
+
+/* PROJECT6_EDITORIAL_TYPE_END */
+
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="shell">
+
+
+<header class="header">
+
+  <div class="badge">
+    P6
+  </div>
+
+  <div class="title-wrap">
+
+    <h1>
+      Traffic Flow Deterioration Early-Warning System
+    </h1>
+
+    <div class="subtitle">
+      Busy traffic ≠ congestion.
+      <span class="sep">|</span>
+      Recorded analysis • cam_3
+    </div>
+
+  </div>
+
+</header>
+
+
+<nav
+  class="tabs"
+  aria-label="Project 6 sections"
+>
+
+  <button
+    class="tab active"
+    type="button"
+    data-page="dashboard"
+  >
+    Dashboard
+  </button>
+
+  <button
+    class="tab"
+    type="button"
+    data-page="video"
+  >
+    Video
+  </button>
+
+  <button
+    class="tab"
+    type="button"
+    data-page="method"
+  >
+    Method
+  </button>
+
+  <button
+    class="tab"
+    type="button"
+    data-page="results"
+  >
+    Results
+  </button>
+
+  <button
+    class="tab"
+    type="button"
+    data-page="about"
+  >
+    About
+  </button>
+
+</nav>
+
+
+<main class="workspace">
+
+
+<!-- ============================================================
+     DASHBOARD
+     ============================================================ -->
+
+<section
+  id="dashboard"
+  class="page active"
+>
+
+  <h2>
+    Recorded warning snapshot / 24:00
+  </h2>
+
+
+  <div class="metrics">
+
+    <article class="metric card">
+      <div class="metric-label">
+        Traffic state
+      </div>
+      <div class="metric-value">
+        WARNING
+      </div>
+      <div class="metric-note">
+        State onset 24:00
+      </div>
+    </article>
+
+
+    <article class="metric card">
+      <div class="metric-label">
+        Zone occupancy
+      </div>
+      <div class="metric-value">
+        3.70
+      </div>
+      <div class="metric-note">
+        Mean observed • last 60s
+      </div>
+    </article>
+
+
+    <article class="metric card">
+      <div class="metric-label">
+        Entry–exit balance
+      </div>
+      <div class="metric-value">
+        +5
+      </div>
+      <div class="metric-note">
+        8 entries / 3 exits
+      </div>
+    </article>
+
+
+    <article class="metric card">
+      <div class="metric-label">
+        Throughput
+      </div>
+      <div class="metric-value">
+        3 exits
+      </div>
+      <div class="metric-note">
+        Eligible exits / 60 sec
+      </div>
+    </article>
+
+
+    <article class="metric card">
+      <div class="metric-label">
+        Relative movement
+      </div>
+      <div class="metric-value small">
+        0.0113054
+      </div>
+      <div class="metric-note">
+        Image diagonals / sec
+      </div>
+    </article>
+
+
+    <article class="metric card">
+      <div class="metric-label">
+        Congestion
+      </div>
+      <div class="metric-value medium">
+        Not confirmed
+      </div>
+      <div class="metric-note">
+        Independent validation
+      </div>
+    </article>
+
+  </div>
+
+
+  <div class="metric-context">
+    Canonical same-window metrics:
+    <strong>(23:00, 24:00]</strong>.
+    Recorded analysis — not live readings.
+  </div>
+
+
+  <div class="dashboard-main">
+
+    <div class="frame dashboard-camera">
+
+      <img
+        src="traffic-flow-early-warning/assets/images/project6_thumbnail.png"
+        alt="Recorded traffic camera analysis"
+      >
+
+      <div class="frame-tag">
+cam_3&nbsp; • &nbsp;SOURCE 24:00
+      </div>
+
+    </div>
+
+
+    <aside class="warning-card card">
+
+      <h3>
+        Why did the warning fire?
+      </h3>
+
+      <div class="drivers">
+        <div>Density level</div>
+        <div>Inflow / outflow imbalance</div>
+        <div>Density trend</div>
+      </div>
+
+
+      <div class="validation">
+
+        <h4>
+          Queue validation
+        </h4>
+
+        <strong>
+          Not established
+        </strong>
+
+        <p>
+          Independent rule did not qualify.<br>
+          No physical queue-absence claim.
+        </p>
+
+      </div>
+
+
+      <div class="action">
+
+        <strong>
+          Consider review / monitor
+        </strong>
+
+        <span>
+          Evidence-supported response
+        </span>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+
+  <div class="diagnostics">
+
+    <article class="spark-card card">
+
+      <h4>
+        Density / rolling count
+      </h4>
+
+      <svg
+        class="spark"
+        viewBox="0 0 260 76"
+      >
+        <polyline
+          points="0,34 12,58 24,65 36,68 48,58 60,66 72,54 84,24 96,12 108,5 120,8 132,9 144,8 156,10 168,8 180,14 192,16 204,20 216,38 228,55 240,63 252,66 260,69"
+          fill="none"
+          stroke="#f59e0b"
+          stroke-width="2.2"
+        />
+      </svg>
+
+      <div class="spark-axis">
+        <span>21:00</span>
+        <span>30:00</span>
+      </div>
+
+    </article>
+
+
+    <article class="spark-card card">
+
+      <h4>
+        Entry–exit balance
+      </h4>
+
+      <svg
+        class="spark"
+        viewBox="0 0 260 76"
+      >
+        <polyline
+          points="0,60 10,45 20,46 30,45 40,61 50,60 60,31 70,12 80,28 90,40 100,35 110,46 120,43 130,53 140,45 150,46 160,42 170,32 180,22 190,35 200,17 210,32 220,49 230,55 240,39 250,45 260,58"
+          fill="none"
+          stroke="#2379ef"
+          stroke-width="2.2"
+        />
+      </svg>
+
+      <div class="spark-axis">
+        <span>21:00</span>
+        <span>30:00</span>
+      </div>
+
+    </article>
+
+
+    <article class="spark-card card">
+
+      <h4>
+        Exits / 60s
+      </h4>
+
+      <svg
+        class="spark"
+        viewBox="0 0 260 76"
+      >
+        <polyline
+          points="0,12 10,42 20,42 30,57 40,56 50,40 60,28 70,39 80,23 90,32 100,9 110,38 120,19 130,42 140,28 150,30 160,20 170,20 180,48 190,45 200,61 210,54 220,39 230,38 240,43 250,54 260,55"
+          fill="none"
+          stroke="#11a65c"
+          stroke-width="2.2"
+        />
+      </svg>
+
+      <div class="spark-axis">
+        <span>21:00</span>
+        <span>30:00</span>
+      </div>
+
+    </article>
+
+
+    <article class="spark-card card">
+
+      <h4>
+        Movement / relative
+      </h4>
+
+      <svg
+        class="spark"
+        viewBox="0 0 260 76"
+      >
+        <polyline
+          points="0,65 10,61 20,69 30,47 40,69 50,55 60,8 70,49 80,53 90,55 100,56 110,57 120,57 130,55 140,61 150,61 160,63 170,61 180,55 190,48 200,40 210,45 220,41 230,48 240,59 248,23 254,63 260,8"
+          fill="none"
+          stroke="#00b8d9"
+          stroke-width="2.2"
+        />
+      </svg>
+
+      <div class="spark-axis">
+        <span>21:00</span>
+        <span>30:00</span>
+      </div>
+
+    </article>
+
+
+    <article class="timeline card">
+
+      <h4>
+        State timeline
+      </h4>
+
+      <div>
+        23:00 NORMAL
+      </div>
+
+      <div>
+        23:03 WATCH
+      </div>
+
+      <div class="strong">
+        24:00 WARNING
+      </div>
+
+    </article>
+
+  </div>
+
+
+  <div class="historical">
+
+    <strong>
+      Historical context — not same-moment 24:00 KPIs:
+    </strong>
+
+    baseline median occupancy 0.7583 •
+    later interval median 4.45 •
+    +486.8% / 5.87× •
+    later median exits 3.5 / 60s •
+    relative movement +16.9%
+
+  </div>
+
+</section>
+
+
+<!-- ============================================================
+     VIDEO
+     ============================================================ -->
+
+<section
+  id="video"
+  class="page"
+>
+
+  <h2>
+    The recorded episode, condensed into a 45-second story
+  </h2>
+
+
+  <div class="video-grid">
+
+    <div class="video-box">
+
+      <video
+        controls
+        playsinline
+        preload="metadata"
+        poster="traffic-flow-early-warning/assets/images/project6_thumbnail.png"
+      >
+
+        <source
+          src="traffic-flow-early-warning/assets/video/project6_linkedin_web.mp4"
+          type="video/mp4"
+        >
+
+        Your browser could not load the Project 6 MP4.
+
+      </video>
+
+    </div>
+
+
+    <aside class="story card">
+
+      <h3>
+        Story chapters
+      </h3>
+
+      <ol class="chapters">
+
+        <li>
+          <span>01</span>
+          <span>Detect</span>
+        </li>
+
+        <li>
+          <span>02</span>
+          <span>Track</span>
+        </li>
+
+        <li>
+          <span>03</span>
+          <span>Measure</span>
+        </li>
+
+        <li class="selected">
+          <span>04</span>
+          <span>Warning</span>
+        </li>
+
+        <li>
+          <span>05</span>
+          <span>Validate</span>
+        </li>
+
+        <li>
+          <span>06</span>
+          <span>Action</span>
+        </li>
+
+      </ol>
+
+
+      <div class="story-meta">
+        Original timestamps retained<br>
+        Accelerated presentation playback<br>
+        Publication approved
+      </div>
+
+    </aside>
+
+  </div>
+
+
+  <div class="video-copy">
+
+    <strong>
+      Source time: 30 minutes.
+      Edit time: approximately 45 seconds.
+    </strong>
+
+    <p>
+      Acceleration changes playback only; dwell, warning persistence
+      and analytical timestamps remain unchanged.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- ============================================================
+     METHOD
+     ============================================================ -->
+
+<section
+  id="method"
+  class="page"
+>
+
+  <h2>
+    A measurable chain from camera to a conditional response
+  </h2>
+
+
+  <div class="pipeline">
+
+    CAMERA → DETECT → TRACK → EVENTS →
+    METRICS → WARNING → VALIDATE → ACTION
+
+  </div>
+
+
+  <div class="method-images">
+
+    <div class="frame method-frame">
+
+      <img
+        src="traffic-flow-early-warning/assets/images/project6_thumbnail.png"
+        alt="Detection example"
+      >
+
+      <div class="frame-tag">
+        YOLOX-Nano • ONNX Runtime CPU
+      </div>
+
+    </div>
+
+
+    <div class="frame method-frame">
+
+      <img
+        src="traffic-flow-early-warning/assets/images/trajectory_map.png"
+        alt="Temporary anonymous trajectories"
+      >
+
+      <div class="frame-tag">
+        Temporary anonymous tracks
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="method-cards">
+
+    <article class="info-card card">
+
+      <h3>
+        DETECT / TRACK
+      </h3>
+
+      <p>
+        3 FPS analytics<br>
+        Existing boxes + clip-local IDs
+      </p>
+
+    </article>
+
+
+    <article class="info-card card">
+
+      <h3>
+        MEASURE
+      </h3>
+
+      <p>
+        Entry / exit events<br>
+        1s metrics • 60s presentation window
+      </p>
+
+    </article>
+
+
+    <article class="info-card card">
+
+      <h3>
+        VALIDATE
+      </h3>
+
+      <p>
+        Independent queue rule<br>
+        Formal 300s metric contract preserved
+      </p>
+
+    </article>
+
+  </div>
+
+</section>
+
+
+<!-- ============================================================
+     RESULTS
+     ============================================================ -->
+
+<section
+  id="results"
+  class="page"
+>
+
+  <h2 class="results-title">
+    TRAFFIC DETERIORATION DETECTED
+  </h2>
+
+
+  <div class="results-grid">
+
+    <div class="frame results-frame">
+
+      <img
+        src="traffic-flow-early-warning/assets/images/project6_thumbnail.png"
+        alt="Traffic deterioration result"
+      >
+
+    </div>
+
+
+    <aside class="results-card card">
+
+      <div class="result">
+
+        <div class="result-label">
+          Warning
+        </div>
+
+        <div class="result-value">
+          24:00
+        </div>
+
+      </div>
+
+
+      <div class="result">
+
+        <div class="result-label">
+          Congestion / queue
+        </div>
+
+        <div class="result-value">
+          Not confirmed
+        </div>
+
+      </div>
+
+
+      <div class="result">
+
+        <div class="result-label">
+          Lead time
+        </div>
+
+        <div class="result-value">
+          Not reportable*
+        </div>
+
+      </div>
+
+
+      <div class="result">
+
+        <div class="result-label">
+          Technical result
+        </div>
+
+        <div class="result-value compact">
+          NO_VISIBLE_QUEUE_EVENT
+        </div>
+
+      </div>
+
+
+      <div class="result-note">
+        *No qualifying queue onset.
+      </div>
+
+    </aside>
+
+  </div>
+
+
+  <div class="results-copy">
+
+    <strong>
+      Traffic pressure warning at 24:00; independent congestion
+      validation did not confirm a sustained queue.
+    </strong>
+
+    <p>
+      Warning persistence: 297 seconds.
+      Primary driver: density.
+      Supporting signals: flow imbalance and density trend.
+    </p>
+
+    <p class="small">
+      Historical diagnostic only:
+      later interval density reached approximately 5.87× baseline
+      while throughput and movement remained active.
+      No demonstrated congestion lead time.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- ============================================================
+     ABOUT
+     ============================================================ -->
+
+<section
+  id="about"
+  class="page"
+>
+
+  <h2>
+    Why distinguish operational pressure from confirmed congestion?
+  </h2>
+
+
+  <div class="about-grid">
+
+    <div class="about-copy">
+
+      <article>
+
+        <h3>
+          Business question
+        </h3>
+
+        <p>
+          Can a fixed camera flag sustained deterioration in traffic
+          flow without overcalling a congestion event?
+        </p>
+
+      </article>
+
+
+      <article>
+
+        <h3>
+          Why it matters
+        </h3>
+
+        <p>
+          Dense traffic alone does not establish a congestion event.
+        </p>
+
+      </article>
+
+
+      <article>
+
+        <h3>
+          My role
+        </h3>
+
+        <p>
+          Prototype pipeline, analytical contracts,
+          evidence validation and presentation design.
+        </p>
+
+      </article>
+
+
+      <article>
+
+        <h3>
+          Technical stack
+        </h3>
+
+        <p>
+          Python • YOLOX-Nano • ONNX Runtime CPU •
+          anonymous multi-object tracking • FFmpeg
+        </p>
+
+      </article>
+
+
+      <article>
+
+        <h3>
+          What the system tracks
+        </h3>
+
+        <p>
+          Clip-local vehicle tracks, entries, exits,
+          movement and eligible dwell.
+        </p>
+
+      </article>
+
+
+      <article>
+
+        <h3>
+          Independent congestion validation
+        </h3>
+
+        <p>
+          Queue-zone occupancy, low motion and persistence;
+          separate from the warning rule.
+        </p>
+
+      </article>
+
+    </div>
+
+
+    <div class="about-side">
+
+      <img
+        class="about-image"
+        src="traffic-flow-early-warning/assets/images/project6_thumbnail.png"
+        alt="Baseline traffic-camera context"
+      >
+
+
+      <article class="about-card card">
+
+        <h3>
+          Privacy
+        </h3>
+
+        <p>
+          No face/plate recognition or persistent identity.
+        </p>
+
+
+        <h3>
+          Current limitations
+        </h3>
+
+        <p>
+          Tracking fragmentation;
+          no independent human-labelled accuracy claim.
+        </p>
+
+
+        <h3>
+          Source permission
+        </h3>
+
+        <p>
+          Publication permission granted.
+          Portfolio release approved.
+        </p>
+
+
+        <h3>
+          Scope
+        </h3>
+
+        <p>
+          Recorded historical analysis prototype.
+          Not live monitoring or production deployment.
+        </p>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+</main>
+
+
+<footer class="footer">
+
+  <span>
+    RECORDED HISTORICAL ANALYSIS
+  </span>
+
+  <span>•</span>
+
+  <span>
+    Publication approved
+  </span>
+
+  <span>•</span>
+
+  <span>
+    Not live monitoring
+  </span>
+
+  <span>•</span>
+
+  <span>
+    Not a production deployment
+  </span>
+
+</footer>
+
+
+</div>
+
+
+<script>
+
+(() => {
+
+  const tabs = [
+    ...document.querySelectorAll(".tab")
+  ];
+
+  const pages = [
+    ...document.querySelectorAll(".page")
+  ];
+
+
+  function activate(name) {
+
+    for (const tab of tabs) {
+
+      tab.classList.toggle(
+        "active",
+        tab.dataset.page === name
+      );
+
+    }
+
+
+    for (const page of pages) {
+
+      page.classList.toggle(
+        "active",
+        page.id === name
+      );
+
+    }
+
+
+    const hash = "#" + name;
+
+    if (
+      window.location.hash
+      !== hash
+    ) {
+
+      history.replaceState(
+        null,
+        "",
+        hash
+      );
+
+    }
+
+  }
+
+
+  for (const tab of tabs) {
+
+    tab.addEventListener(
+      "click",
+      () => activate(
+        tab.dataset.page
+      )
+    );
+
+  }
+
+
+  const requested =
+    window.location.hash
+      .replace("#", "");
+
+
+  const valid = tabs.some(
+    tab =>
+      tab.dataset.page
+      === requested
+  );
+
+
+  if (valid) {
+
+    activate(
+      requested
+    );
+
+  }
+
+})();
+
+</script>
+
+
+</body>
+
+</html>
