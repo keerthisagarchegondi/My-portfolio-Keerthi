@@ -14,6 +14,21 @@ import styles from './Projects.module.css';
 const PROJECTS = [
 
   {
+    emoji: '◉',
+    tag: 'Evaluation Metrics / Reproducible ML Audit',
+    title: 'Point Adjustment Under Random Scores',
+    subtitle: 'The alerts stayed the same. The reported F1 changed.',
+    desc: 'A reproducible anomaly-evaluation audit showing how identical random alerts receive dramatically different reported F1 under raw pointwise versus point-adjusted scoring.',
+    impact: ['Raw F1: 0.017', 'Adjusted F1: 0.833', 'Event-hit probability: 86.6%'],
+    stack: ['Python', 'Monte Carlo', 'Evaluation Metrics', 'Reproducibility', 'Data Visualization'],
+    color: '#20c7b5',
+    featured: true,
+    image: '/point-adjustment-random-scores/figures/01_same_alerts_different_f1.png',
+    imageAlt: 'Project 9 figure showing the same alerts under raw pointwise and point-adjusted F1 evaluation.',
+    detailUrl: '/point-adjustment-random-scores/index.html',
+  },
+
+  {
     emoji: '🚦',
     tag: 'Computer Vision & Traffic Analytics',
     title: 'Traffic Flow Deterioration Early-Warning System',

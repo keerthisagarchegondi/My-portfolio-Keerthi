@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A reproducible finite-sample audit of how point adjustment changes anomaly-detection evaluation for identical random alerts.">
+  <meta property="og:title" content="Point Adjustment Under Random Scores — Project 9">
+  <meta property="og:description" content="The alerts stayed the same. The reported F1 changed.">
+  <meta property="og:type" content="website">
+  <title>Point Adjustment Under Random Scores — Project 9</title>
+  <style>
+    :root { --navy:#10263c; --ink:#15283b; --muted:#607084; --line:#d9e4ea; --bg:#f5f8fa; --surface:#fff; --teal:#0b9e92; --teal-soft:#e3f7f4; --blue:#3d78e8; --gold:#d9901b; --red:#c84f61; --radius:22px; --shadow:0 20px 55px rgba(16,38,60,.09); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--ink); background:radial-gradient(circle at 4% 0%,rgba(11,158,146,.13),transparent 31rem),radial-gradient(circle at 96% 12%,rgba(61,120,232,.11),transparent 30rem),var(--bg); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.55; }
+    a { color:inherit; }
+    .shell { max-width:1220px; margin:0 auto; padding:0 28px; }
+    .topbar { min-height:72px; display:flex; justify-content:space-between; align-items:center; gap:20px; border-bottom:1px solid rgba(21,40,59,.11); }
+    .brand { display:flex; align-items:center; gap:11px; text-decoration:none; font-size:13px; font-weight:800; letter-spacing:.02em; }
+    .brand-mark { display:grid; place-items:center; width:28px; height:28px; color:#fff; border-radius:9px; background:linear-gradient(135deg,var(--teal),var(--blue)); }
+    .crumb { color:var(--muted); font-size:12px; font-weight:700; text-decoration:none; }
+    .hero { padding:74px 0 40px; display:grid; grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr); gap:40px; align-items:end; }
+    .eyebrow { margin:0 0 16px; color:var(--teal); font-size:12px; font-weight:850; letter-spacing:.15em; text-transform:uppercase; }
+    h1,h2,h3,p { margin-top:0; }
+    h1 { max-width:840px; margin-bottom:24px; font-size:clamp(42px,6vw,76px); line-height:.98; letter-spacing:-.055em; }
+    .hook { max-width:700px; color:var(--navy); font-size:clamp(21px,2.5vw,30px); line-height:1.28; font-weight:720; }
+    .lede { max-width:730px; color:var(--muted); font-size:17px; }
+    .hero-card { padding:25px; color:#fff; border-radius:var(--radius); background:linear-gradient(145deg,#102b45,#155f72); box-shadow:var(--shadow); }
+    .hero-card small { color:#b9e7e2; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+    .hero-value { margin:13px 0 7px; font-size:52px; font-weight:850; line-height:1; letter-spacing:-.06em; }
+    .hero-card p { margin:0; color:#d8e9ec; font-size:14px; }
+    .cta-row { display:flex; flex-wrap:wrap; gap:11px; margin-top:30px; }
+    .button { display:inline-flex; align-items:center; justify-content:center; min-height:45px; padding:10px 17px; border:1px solid transparent; border-radius:999px; font-size:14px; font-weight:780; text-decoration:none; transition:transform .18s ease,box-shadow .18s ease,background .18s ease; }
+    .button:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(16,38,60,.16); }
+    .button.primary { color:#fff; background:var(--navy); }
+    .button.accent { color:#043c38; background:#c7f4ed; }
+    .button.ghost { border-color:#b9cbd4; background:rgba(255,255,255,.72); }
+    nav { position:sticky; top:0; z-index:4; border-top:1px solid rgba(21,40,59,.08); border-bottom:1px solid var(--line); background:rgba(245,248,250,.94); backdrop-filter:blur(16px); }
+    nav .shell { display:flex; gap:16px; padding-top:12px; padding-bottom:12px; overflow-x:auto; }
+    nav a { flex:none; color:var(--muted); font-size:12px; font-weight:760; text-decoration:none; }
+    nav a:hover { color:var(--teal); }
+    section { padding:66px 0; border-bottom:1px solid rgba(21,40,59,.08); }
+    .section-kicker { color:var(--teal); font-size:11px; font-weight:850; letter-spacing:.14em; text-transform:uppercase; }
+    h2 { margin:7px 0 18px; max-width:780px; font-size:clamp(30px,4vw,48px); line-height:1.06; letter-spacing:-.045em; }
+    .section-copy { max-width:760px; color:var(--muted); font-size:17px; }
+    .story-grid,.two-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:28px; }
+    .card { min-width:0; padding:24px; border:1px solid var(--line); border-radius:18px; background:var(--surface); box-shadow:0 8px 28px rgba(16,38,60,.04); }
+    .card h3 { margin-bottom:10px; font-size:20px; letter-spacing:-.025em; }
+    .card p { margin-bottom:0; color:var(--muted); }
+    .mechanism { display:grid; grid-template-columns:1fr auto 1fr; align-items:stretch; gap:14px; margin-top:28px; }
+    .mechanism-card { padding:26px; border-radius:18px; background:#fff; border:1px solid var(--line); }
+    .mechanism-card strong { display:block; margin-bottom:9px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; }
+    .mechanism-card.raw strong { color:var(--red); }.mechanism-card.adjusted strong { color:var(--teal); }
+    .same { align-self:center; color:var(--blue); font-size:12px; font-weight:850; letter-spacing:.12em; text-align:center; text-transform:uppercase; }
+    .experiment-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:11px; margin-top:28px; }
+    .fact { min-height:122px; padding:18px; border-radius:16px; background:#fff; border:1px solid var(--line); }
+    .fact b { display:block; color:var(--navy); font-size:25px; letter-spacing:-.04em; }.fact span { color:var(--muted); font-size:12px; font-weight:700; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-top:28px; }
+    .metric { padding:22px; border-radius:18px; border:1px solid var(--line); background:#fff; }.metric .label { color:var(--muted); font-size:11px; font-weight:850; letter-spacing:.09em; text-transform:uppercase; }.metric .value { margin-top:9px; font-size:clamp(31px,4vw,48px); font-weight:850; line-height:1; letter-spacing:-.06em; }.metric.raw .value { color:var(--red); }.metric.adjusted .value { color:var(--teal); }.metric.delta .value { color:var(--blue); }.metric.probability .value { color:var(--gold); }.metric small { display:block; margin-top:8px; color:var(--muted); }
+    figure { margin:28px 0 0; padding:14px; border:1px solid var(--line); border-radius:20px; background:#fff; box-shadow:var(--shadow); }
+    figure img { display:block; width:100%; height:auto; border-radius:12px; } figcaption { padding:12px 4px 2px; color:var(--muted); font-size:13px; }
+    .formula { margin-top:24px; padding:24px; border-radius:18px; color:#fff; background:linear-gradient(135deg,#173750,#1d6a79); font-size:clamp(22px,3vw,34px); font-weight:750; text-align:center; letter-spacing:-.03em; }
+    .video { overflow:hidden; margin-top:28px; border-radius:20px; background:#061522; box-shadow:var(--shadow); }.video video { display:block; width:100%; max-height:690px; background:#061522; }
+    .limits { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:26px; }.limit { padding:16px; border:1px solid #ebd9b8; border-radius:15px; background:#fff9ee; color:#614b25; font-size:14px; font-weight:700; }
+    .skills { display:flex; flex-wrap:wrap; gap:9px; margin-top:24px; }.skill { padding:8px 12px; border:1px solid #b9dad6; border-radius:999px; color:#075c55; background:var(--teal-soft); font-size:13px; font-weight:750; }
+    .release { padding:30px; border-radius:22px; color:#fff; background:linear-gradient(145deg,#102b45,#173a5b); }.release h2 { margin-bottom:12px; }.release p { max-width:710px; color:#cfdee9; }.release .button.primary { background:#c7f4ed; color:#043c38; }.release .button.ghost { border-color:#7392a9; color:#fff; background:transparent; }
+    footer { padding:30px 0 52px; color:var(--muted); font-size:13px; }
+    @media (max-width:900px) { .hero { grid-template-columns:1fr; gap:24px; }.experiment-grid { grid-template-columns:repeat(3,1fr); }.metrics { grid-template-columns:repeat(2,1fr); }.limits { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:620px) { .shell { padding:0 18px; }.topbar { min-height:62px; }.hero { padding:49px 0 28px; } section { padding:48px 0; }.story-grid,.two-grid,.mechanism { grid-template-columns:1fr; }.same { padding:2px 0; }.experiment-grid { grid-template-columns:repeat(2,1fr); }.metrics,.limits { grid-template-columns:1fr; }.hero-card,.card,.mechanism-card,.metric,.release { padding:20px; }.cta-row { display:grid; grid-template-columns:1fr; }.button { width:100%; }.crumb { display:none; } }
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">◉</span>Keerthi Sagar Chegondi</a>
+    <a class="crumb" href="/">Portfolio / Project 9</a>
+  </header>
+  <main>
+    <div class="shell hero">
+      <div>
+        <p class="eyebrow">Project 9 · Evaluation Metrics / Reproducible ML Audit</p>
+        <h1>Point Adjustment Under Random Scores</h1>
+        <p class="hook">The alerts stayed the same.<br>The reported F1 changed.</p>
+        <p class="lede">A partial replication and finite-sample audit of anomaly-evaluation behavior. This synthetic study holds random alerts fixed, then examines what changes when the evaluation rule changes.</p>
+        <div class="cta-row">
+          <a class="button primary" href="#explainer">Watch 45s explainer</a>
+          <a class="button accent" href="dashboard/project9_anomaly_evaluation.html" target="_blank" rel="noopener noreferrer">Open interactive dashboard</a>
+          <a class="button ghost" href="https://github.com/keerthisagarchegondi/linkedin-visual-labs/releases/tag/project9-v0.1.0" target="_blank" rel="noopener noreferrer">GitHub release</a>
+        </div>
+      </div>
+      <aside class="hero-card" aria-label="Primary result">
+        <small>Same random alerts · L = 200 · q = 1%</small>
+        <div class="hero-value">0.017 → 0.833</div>
+        <p>Raw F1 versus point-adjusted F1 across 2,000 paired Monte Carlo runs. The predictions do not change; the reported metric does.</p>
+      </aside>
+    </div>
+    <nav aria-label="Case study sections"><div class="shell"><a href="#problem">The problem</a><a href="#mechanism">Mechanism</a><a href="#experiment">Experiment</a><a href="#result">Result</a><a href="#validation">Validation</a><a href="#limits">Scope</a><a href="#release">Release</a></div></nav>
+    <section id="problem"><div class="shell"><div class="section-kicker">1 · The problem</div><h2>One alert can be scored at two very different scales.</h2><div class="story-grid"><article class="card"><h3>Think smoke alarm, not model magic.</h3><p>If a smoke alarm rings once during a long emergency, a point-by-point score credits that one instant. An event-aware rule may credit the whole event after any hit. Both views can be useful—but they answer different questions.</p></article><article class="card"><h3>The audit question</h3><p>What happens when exactly the same randomly generated alerts are evaluated by these two rules? This project audits the ruler used to judge alerts; it does not build or benchmark a detector.</p></article></div></div></section>
+    <section id="mechanism"><div class="shell"><div class="section-kicker">2 · See the mechanism</div><h2>Same alerts. Only the evaluation changes.</h2><div class="mechanism"><div class="mechanism-card raw"><strong>Raw scoring</strong><p>Credit is assigned at each timestamp. One random hit within a long event leaves most event timestamps uncredited.</p></div><div class="same">Same<br>alerts</div><div class="mechanism-card adjusted"><strong>Point adjustment</strong><p>After a hit lands within an event, the scoring convention gives credit across that event. The alert sequence itself is unchanged.</p></div></div></div></section>
+    <section id="experiment"><div class="shell"><div class="section-kicker">3 · The experiment</div><h2>A controlled, paired finite-sample study.</h2><p class="section-copy">Each condition uses the same simulated alert draws for raw and adjusted scoring, separating the effect of the evaluation convention from a change in alerts.</p><div class="experiment-grid"><div class="fact"><b>20,000</b><span>timestamps</span></div><div class="fact"><b>1,000</b><span>anomalous timestamps</span></div><div class="fact"><b>5%</b><span>prevalence</span></div><div class="fact"><b>45</b><span>conditions</span></div><div class="fact"><b>2,000</b><span>paired runs / condition</span></div></div><div class="two-grid"><article class="card"><h3>Event lengths</h3><p>1, 5, 10, 20, 50, 100, 200, 500, and 1,000 timestamps.</p></article><article class="card"><h3>Random-alert probabilities</h3><p>q = 0.001, 0.005, 0.01, 0.05, and 0.10.</p></article></div></div></section>
+    <section id="result"><div class="shell"><div class="section-kicker">4 · Primary result</div><h2>At L = 200 and q = 1%, the reported F1 changes sharply.</h2><div class="metrics"><div class="metric raw"><div class="label">Raw F1</div><div class="value">0.017</div><small>pointwise credit</small></div><div class="metric adjusted"><div class="label">Point-adjusted F1</div><div class="value">0.833</div><small>event-aware credit</small></div><div class="metric delta"><div class="label">ΔF1</div><div class="value">+0.817</div><small>same random alerts</small></div><div class="metric probability"><div class="label">Event-hit probability</div><div class="value">86.6%</div><small>analytical expectation</small></div></div><figure><img src="figures/01_same_alerts_different_f1.png" alt="Scientific figure comparing low raw F1 with high point-adjusted F1 for the same random alerts."><figcaption>Primary comparison: raw and point-adjusted scoring applied to the same generated alerts.</figcaption></figure></div></section>
+    <section><div class="shell"><div class="section-kicker">5 · Event-length insight</div><h2>Longer events make a random hit more likely.</h2><p class="section-copy">At q = 1%, the probability of at least one random alert in an event rises from approximately 1.0% when L = 1 to 86.6% when L = 200. Adjusted F1 rises strongly with event length even though the predictions remain random and unchanged.</p><figure><img src="figures/02_event_length_sensitivity.png" alt="Scientific figure showing event-hit probability and adjusted F1 increasing with event length at fixed random-alert probability."><figcaption>Event-length sensitivity at fixed random-alert behavior.</figcaption></figure></div></section>
+    <section id="validation"><div class="shell"><div class="section-kicker">6 · Analytical validation</div><h2>Simulation behavior matches the event-hit probability.</h2><div class="formula">P(hit event) = 1 − (1 − q)<sup>L</sup></div><p class="section-copy">The analytical probability quantifies the chance that random alerts hit an event at least once. The simulation results align with that mechanism across the tested conditions.</p><figure><img src="figures/03_probability_validation.png" alt="Scientific figure comparing analytical event-hit probability with simulated event-hit behavior."><figcaption>Analytical and simulated event-hit behavior agree across the evaluated settings.</figcaption></figure></div></section>
+    <section><div class="shell"><div class="section-kicker">7 · What it means</div><h2>I didn’t build another anomaly detector. I audited the ruler used to judge one.</h2><div class="two-grid"><article class="card"><h3>Why it matters</h3><p>Evaluation design, measurement validity, and experimental controls can materially affect how results are interpreted. The work demonstrates paired experimental design, analytical validation, and reproducible reporting.</p></article><article class="card"><h3>What to ask next</h3><p>Before comparing detector results, make the scoring convention explicit, test its behavior under relevant event structures, and report limits alongside summary metrics.</p></article></div></div></section>
+    <section id="limits"><div class="shell"><div class="section-kicker">8 · What it does not mean</div><h2>Bounded claims are part of the result.</h2><div class="limits"><div class="limit">Synthetic setup</div><div class="limit">Random alerts</div><div class="limit">Not a detector benchmark</div><div class="limit">Not “random beats AI”</div><div class="limit">Not a claim that all event-aware metrics are wrong</div><div class="limit">Partial replication; source discrepancy documented in the release</div></div></div></section>
+    <section id="explainer"><div class="shell"><div class="section-kicker">9 · 45-second explainer</div><h2>Watch the narrative from random alerts to measurement interpretation.</h2><div class="video"><video controls playsinline preload="metadata" aria-label="Project 9 45-second cinematic explainer"><source src="media/project9_linkedin_45s.mp4" type="video/mp4">Your browser does not support HTML video.</video></div></div></section>
+    <section><div class="shell"><div class="section-kicker">10 · Interactive dashboard</div><h2>Explore the final V6 evaluation dashboard.</h2><p class="section-copy">The dashboard is preserved as the validated, self-contained release artifact. It opens separately so its complete interface remains reliable on static hosting.</p><div class="cta-row"><a class="button primary" href="dashboard/project9_anomaly_evaluation.html" target="_blank" rel="noopener noreferrer">Open interactive dashboard</a></div></div></section>
+    <section id="release"><div class="shell"><div class="release"><div class="section-kicker" style="color:#9de4dc">11 · Reproducibility / release</div><h2>Inspect the frozen Project 9 release.</h2><p>Release v0.1.0 includes the reproducible study materials and documented source discrepancy. No DOI, journal, or peer-review status is claimed here.</p><div class="cta-row"><a class="button primary" href="https://github.com/keerthisagarchegondi/linkedin-visual-labs/releases/tag/project9-v0.1.0" target="_blank" rel="noopener noreferrer">GitHub release</a><a class="button ghost" href="https://github.com/keerthisagarchegondi/linkedin-visual-labs/archive/refs/tags/project9-v0.1.0.zip" target="_blank" rel="noopener noreferrer">Download reproducible release</a><a class="button ghost" href="https://github.com/keerthisagarchegondi/linkedin-visual-labs" target="_blank" rel="noopener noreferrer">Repository</a></div></div></div></section>
+    <section><div class="shell"><div class="section-kicker">Technical skills demonstrated</div><h2>Evidence-led evaluation engineering.</h2><div class="skills"><span class="skill">Python</span><span class="skill">Monte Carlo simulation</span><span class="skill">Analytical validation</span><span class="skill">Paired experimental design</span><span class="skill">Strict typing</span><span class="skill">Testing</span><span class="skill">Deterministic reproduction</span><span class="skill">HTML dashboard generation</span><span class="skill">Video visualization</span><span class="skill">Release engineering</span></div></div></section>
+  </main>
+  <footer class="shell">Project 9 · Point Adjustment Under Random Scores · Keerthi Sagar Chegondi</footer>
+</body>
+</html>
